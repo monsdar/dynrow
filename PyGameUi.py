@@ -33,39 +33,27 @@ class PyGameUi():
         self.callbacks = [] #the callbacks which are called every cycle
         self.starttime = 0
 
-        #these attributes are needed to calc the FPS
-        self.MAXTICKSAMPLES = 100
-        self.tickIndex = 0
-        self.tickSum = 0.0
-        self.tickList = []
-        for index in range(0,self.MAXTICKSAMPLES):
-            self.tickList.append(0.0)
-        self.tickStamp = datetime.now().second * 1000 + datetime.now().microsecond / 1000.0
-
         #init PyGame
         pygame.init()
 
         # width and height of the fullscreen window
         modes = pygame.display.list_modes()
         print 'Using fullscreen resolution:', modes[0]
-        self.screen = pygame.display.set_mode(modes[0], pygame.FULLSCREEN)
-        self.width = modes[0][0]
-        self.height = modes[0][1]
+        #self.screen = pygame.display.set_mode(modes[0], pygame.FULLSCREEN)
+        #self.width = modes[0][0]
+        #self.height = modes[0][1]
+        self.screen = pygame.display.set_mode([1366, 768])
+        self.width = 1366
+        self.height = 768
         self.statPanelHeight = 300
         self.racePanelHeight = self.height - self.statPanelHeight
 
         #this is the font we're using throughout the game
         self.font = pygame.font.SysFont('Arial', 32)
 
-    def calcFps(self, newTick):
-        self.tickSum -= self.tickList[self.tickIndex]
-        self.tickSum += newTick
-        self.tickList[self.tickIndex] = newTick
-        self.tickIndex += 1
-        if(self.tickIndex == self.MAXTICKSAMPLES):
-            self.tickIndex = 0
-        deltaT = (self.tickSum / self.MAXTICKSAMPLES)
-        return 1000.0 / deltaT
+    def getTimestamp(self):
+        curr = datetime.now()
+        return curr.day * 24 * 60 * 1000 * 1000 + curr.hour * 60 * 1000 * 1000 + curr.minute * 60 * 1000 + curr.second * 1000 + curr.microsecond / 1000
 
     def run(self):
         #Loop until the user clicks the close button.
@@ -75,6 +63,7 @@ class PyGameUi():
         while not done:
             #let's lock to 60 FPS
             clock.tick(60)
+            pygame.display.set_caption("%3.2f FPS" % clock.get_fps())
 
             for event in pygame.event.get(): # User did something
                 if (event.type == pygame.QUIT) or (event.type is pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
@@ -86,12 +75,10 @@ class PyGameUi():
 
             #if time hasn't been set yet, do it now
             if(self.starttime == 0):
-                curr = datetime.now()
-                self.starttime = curr.day * 24*60*1000*1000 + curr.hour * 60*1000*1000 + curr.minute*60*1000 + curr.second*1000 + curr.microsecond / 1000
+                self.starttime = self.getTimestamp()
 
             #calc how much time has been gone
-            curr = datetime.now()
-            currTime = curr.day * 24*60*1000*1000 + curr.hour * 60*1000*1000 + curr.minute*60*1000 + curr.second*1000 + curr.microsecond / 1000
+            currTime = self.getTimestamp()
             timeGone = currTime - self.starttime
 
             for cb in self.callbacks:
@@ -107,7 +94,6 @@ class PyGameUi():
     def update(self, playground):
         #Get the current distance from the player boat
         self.currentDistance = playground.getPlayerBoat().distance
-
         self.adjustDistance(playground.boats, self.currentDistance)
 
         #update the racing section
@@ -117,14 +103,6 @@ class PyGameUi():
 
         #update the stat section
         self.updateStatBackground(self.currentDistance)
-
-        #display the current FPS in the title
-        currentTickStamp = datetime.now().second * 1000 + datetime.now().microsecond / 1000.0
-        if(currentTickStamp > self.tickStamp):
-            deltaT = currentTickStamp - self.tickStamp
-            self.screen.blit(self.font.render("%3.2f FPS" % self.calcFps(deltaT), True, NAVY), (50, 250))
-            #pygame.display.set_caption("%3.2f FPS" % self.calcFps(deltaT))
-        self.tickStamp = currentTickStamp
 
     def adjustDistance(self, boats, distance):
         #check the distance from player to the first boat
@@ -165,22 +143,27 @@ class PyGameUi():
         sceneStart = distance + self.sceneStartOffset
         sceneEnd = distance + self.sceneEndOffset
 
+        #the following factors are used to calculate from a distance in meters into a distance on the
+        #screen (1m in our simulation is not 1px on the screen, depends on the sceneRange we've got)
+        heightFactor = self.racePanelHeight / self.sceneRange
+        widthFactor = self.width / self.sceneRange
+
         #print the horizontal lines
-        for y in range(self.statPanelHeight, self.height, int(self.laneHeight * (self.racePanelHeight / self.sceneRange))):
-            pygame.draw.line(self.screen, STEELBLUE, [0, y + (self.laneHeight/2) * (self.racePanelHeight/self.sceneRange)],[self.width, y + (self.laneHeight/2) * (self.racePanelHeight/self.sceneRange)], 1)
+        for y in range(self.statPanelHeight, self.height, int(self.laneHeight * heightFactor)):
+            pygame.draw.line(self.screen, STEELBLUE, [0, y + (self.laneHeight/2) * heightFactor],[self.width, y + (self.laneHeight/2) * heightFactor], 1)
 
         for lineStep in range(int(sceneStart), int(sceneEnd), self.LANEWIDTH):
             prevOffset = lineStep - (lineStep % self.LANEWIDTH) #get the previous dividable laneWidth-step
-            linePos = (prevOffset - sceneStart) * (self.width / self.sceneRange) #get the position and project the window size
+            linePos = (prevOffset - sceneStart) * widthFactor #get the position and project the window size
 
             #create the actual marker
-            for heightPos in range(self.statPanelHeight, self.height, int(self.laneHeight * (self.racePanelHeight/self.sceneRange))):
+            for heightPos in range(self.statPanelHeight, self.height, int(self.laneHeight * heightFactor)):
                 if(prevOffset % self.LANEWIDTHBIG == 0):
-                    pygame.draw.circle(self.screen, FIREBRICK, [int(linePos), int(heightPos + (self.laneHeight/2) * (self.racePanelHeight/self.sceneRange))], 4)
-                    pygame.draw.circle(self.screen, BLACK, [int(linePos), int(heightPos + (self.laneHeight/2) * (self.racePanelHeight/self.sceneRange))], 4, 1)
+                    pygame.draw.circle(self.screen, FIREBRICK, [int(linePos), int(heightPos + (self.laneHeight/2) * heightFactor)], 4)
+                    pygame.draw.circle(self.screen, BLACK, [int(linePos), int(heightPos + (self.laneHeight/2) * heightFactor)], 4, 1)
                 else:
-                    pygame.draw.circle(self.screen, LIGHTGREY, [int(linePos), int(heightPos + (self.laneHeight/2) * (self.racePanelHeight/self.sceneRange))], 2)
-                    pygame.draw.circle(self.screen, BLACK, [int(linePos), int(heightPos + (self.laneHeight/2) * (self.racePanelHeight/self.sceneRange))], 2, 1)
+                    pygame.draw.circle(self.screen, LIGHTGREY, [int(linePos), int(heightPos + (self.laneHeight/2) * heightFactor)], 2)
+                    pygame.draw.circle(self.screen, BLACK, [int(linePos), int(heightPos + (self.laneHeight/2) * heightFactor)], 2, 1)
 
             #display the distance marker
             lineText = str(prevOffset)
@@ -188,19 +171,27 @@ class PyGameUi():
             self.screen.blit(self.font.render(lineText, True, NAVY), (linePos+15, self.statPanelHeight+8))
 
     def updatePlayer(self, distance):
-        currentHeight = (self.playerLane + 1) * self.laneHeight * (self.racePanelHeight/self.sceneRange) + self.statPanelHeight
+        #the following factors are used to calculate from a distance in meters into a distance on the
+        #screen (1m in our simulation is not 1px on the screen, depends on the sceneRange we've got)
+        heightFactor = self.racePanelHeight / self.sceneRange
+
+        currentHeight = (self.playerLane + 1) * self.laneHeight * heightFactor + self.statPanelHeight
         pos = {"posX": self.width/2 , "posY": currentHeight}
         self.printBoat(pos, distance, DARKORANGE)
 
     def printBoat(self, position, distance, color):
+        #the following factors are used to calculate from a distance in meters into a distance on the
+        #screen (1m in our simulation is not 1px on the screen, depends on the sceneRange we've got)
+        heightFactor = self.racePanelHeight / self.sceneRange
+        widthFactor = self.width / self.sceneRange
+
         posX = position["posX"]
         posY = position["posY"]
-        #the following polygon is calculated with offsets in metres, the offset than is multiplied to
-        #match the current projection and windows size
-        boatPolygon = [ [posX-(8 * self.width / self.sceneRange), posY],
-                        [posX-(4 * self.width / self.sceneRange), posY-(1.0 * self.racePanelHeight / self.sceneRange)],
+        #this is how the boat looks:
+        boatPolygon = [ [posX-(8 * widthFactor), posY],
+                        [posX-(4 * widthFactor), posY-(1.5 * heightFactor)],
                         [posX, posY],
-                        [posX-(4 * self.width / self.sceneRange), posY+(1.0 * self.racePanelHeight / self.sceneRange)]]
+                        [posX-(4 * widthFactor), posY+(1.5 * heightFactor)]]
 
         #display the distance of each boat next to it
         pygame.draw.polygon(self.screen, color, boatPolygon)
@@ -210,24 +201,29 @@ class PyGameUi():
             distText = "%.0fm" % distance
         else:
             distText = "%.0fm" % float(distance - self.currentDistance)
-        txtX = posX - (10 * self.width / self.sceneRange)
+        txtX = posX - (10 * widthFactor)
         if(txtX < 10):
             txtX = 10
         elif(txtX > (self.width - 100)):
             txtX = (self.width - 100)
-        txtY = posY - (1 * self.racePanelHeight / self.sceneRange)
+        txtY = posY - (1.0 * heightFactor)
         self.screen.blit(self.font.render(distText, True, NAVY), (txtX, txtY))
 
     def updateBoats(self, boats):
+        #the following factors are used to calculate from a distance in meters into a distance on the
+        #screen (1m in our simulation is not 1px on the screen, depends on the sceneRange we've got)
+        heightFactor = self.racePanelHeight / self.sceneRange
+        widthFactor = self.width / self.sceneRange
+
         for index, boat in enumerate(boats):
             #calc the height
             if(index >= self.playerLane):
                 index += 1
-            currentLane = (index + 1) * self.laneHeight * (self.racePanelHeight/self.sceneRange) + self.statPanelHeight
+            currentLane = (index + 1) * self.laneHeight * heightFactor + self.statPanelHeight
 
             #calc the horizontal position
             relativeDistance = boat.distance-self.currentDistance
-            boatPos = relativeDistance * (self.width / self.sceneRange) + self.width/2
+            boatPos = relativeDistance * widthFactor + self.width/2
 
             #print the boat
             pos = {"posX": boatPos, "posY": currentLane }
