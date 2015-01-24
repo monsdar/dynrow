@@ -15,10 +15,6 @@ GREEN           = (  0, 128,   0)
 
 class PyGameUi():
     def __init__(self):
-        # width and height of the window
-        self.width = 800
-        self.height = 300
-
         # the distance in meters which will be drawn
         self.MINSCENERANGE = 50 #the minimum range which will be shown on screen
         self.MAXSCENERANGE = 100 #the maximum range which will be shown on screen
@@ -29,7 +25,8 @@ class PyGameUi():
 
         self.LANEWIDTH = 10 # the steps where the distance will be shown
         self.LANEWIDTHBIG = 50 #the steps where more special marks are used to show the distance
-        self.laneHeight = 50 # the height between the lanes
+        self.laneHeight = 10.0 # the height between the lanes
+        self.playerLane = 2 #the lane where the player is located (counting starts with 0)
 
         self.CYCLETIME = 10
         self.currentDistance = 0.0
@@ -46,10 +43,18 @@ class PyGameUi():
             self.tickList.append(0.0)
         self.tickStamp = datetime.now().second * 1000 + datetime.now().microsecond / 1000.0
 
+        #init PyGame
         pygame.init()
-        size = [self.width, self.height]
+
+        # width and height of the fullscreen window
+        modes = pygame.display.list_modes()
+        print 'Using fullscreen resolution:', modes[0]
+        self.screen = pygame.display.set_mode(modes[0], pygame.FULLSCREEN)
+        self.width = modes[0][0]
+        self.height = modes[0][1]
+
+        #this is the font we're using throughout the game
         self.font = pygame.font.SysFont('Arial', 16)
-        self.screen = pygame.display.set_mode(size)
 
     def calcFps(self, newTick):
         self.tickSum -= self.tickList[self.tickIndex]
@@ -71,7 +76,7 @@ class PyGameUi():
             clock.tick(60)
 
             for event in pygame.event.get(): # User did something
-                if event.type == pygame.QUIT: # If user clicked close
+                if (event.type == pygame.QUIT) or (event.type is pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
                     done=True # Flag that we are done so we exit this loop
                     continue #Why waste time to paint one last time?
 
@@ -89,8 +94,7 @@ class PyGameUi():
             timeGone = currTime - self.starttime
 
             for cb in self.callbacks:
-                if(timeGone):
-                    cb(timeGone)
+                cb(timeGone)
 
             # Go ahead and update the screen with what we've drawn.
             # This MUST happen after all the other drawing commands.
@@ -151,28 +155,25 @@ class PyGameUi():
 
     def updateBackground(self, distance):
         #this defines the start and end of the scene
-
         sceneStart = distance + self.sceneStartOffset
         sceneEnd = distance + self.sceneEndOffset
 
         #print the horizontal lines
-        for y in range(0, self.height, self.laneHeight):
-            #the offset is needed to "move" the dashed lines along with the rest of the scenery
-            #TODO: Adjust the height of lanes according to the current range
-            pygame.draw.line(self.screen, STEELBLUE, [0, y + self.laneHeight/2],[self.width, y + self.laneHeight/2], 1)
+        for y in range(0, self.height, int(self.laneHeight * (self.height / self.sceneRange))):
+            pygame.draw.line(self.screen, STEELBLUE, [0, y + (self.laneHeight/2) * (self.height/self.sceneRange)],[self.width, y + (self.laneHeight/2) * (self.height/self.sceneRange)], 1)
 
         for lineStep in range(int(sceneStart), int(sceneEnd), self.LANEWIDTH):
             prevOffset = lineStep - (lineStep % self.LANEWIDTH) #get the previous dividable laneWidth-step
             linePos = (prevOffset - sceneStart) * (self.width / self.sceneRange) #get the position and project the window size
 
             #create the actual marker
-            for heightPos in range(0, self.height, self.laneHeight):
+            for heightPos in range(0, self.height, int(self.laneHeight * (self.height/self.sceneRange))):
                 if(prevOffset % self.LANEWIDTHBIG == 0):
-                    pygame.draw.circle(self.screen, FIREBRICK, [int(linePos), int(heightPos + self.laneHeight/2)], 4)
-                    pygame.draw.circle(self.screen, BLACK, [int(linePos), int(heightPos + self.laneHeight/2)], 4, 1)
+                    pygame.draw.circle(self.screen, FIREBRICK, [int(linePos), int(heightPos + (self.laneHeight/2) * (self.height/self.sceneRange))], 4)
+                    pygame.draw.circle(self.screen, BLACK, [int(linePos), int(heightPos + (self.laneHeight/2) * (self.height/self.sceneRange))], 4, 1)
                 else:
-                    pygame.draw.circle(self.screen, LIGHTGREY, [int(linePos), int(heightPos + self.laneHeight/2)], 2)
-                    pygame.draw.circle(self.screen, BLACK, [int(linePos), int(heightPos + self.laneHeight/2)], 2, 1)
+                    pygame.draw.circle(self.screen, LIGHTGREY, [int(linePos), int(heightPos + (self.laneHeight/2) * (self.height/self.sceneRange))], 2)
+                    pygame.draw.circle(self.screen, BLACK, [int(linePos), int(heightPos + (self.laneHeight/2) * (self.height/self.sceneRange))], 2, 1)
 
             #display the distance marker
             lineText = str(prevOffset)
@@ -180,7 +181,8 @@ class PyGameUi():
             self.screen.blit(self.font.render(lineText, True, NAVY), (linePos+15, 8))
 
     def updatePlayer(self, distance):
-        pos = {"posX": self.width/2, "posY": self.height/2}
+        currentHeight = (self.playerLane + 1) * self.laneHeight * (self.height/self.sceneRange)
+        pos = {"posX": self.width/2 , "posY": currentHeight}
         self.printBoat(pos, distance, DARKORANGE)
 
     def printBoat(self, position, distance, color):
@@ -189,9 +191,9 @@ class PyGameUi():
         #the following polygon is calculated with offsets in metres, the offset than is multiplied to
         #match the current projection and windows size
         boatPolygon = [ [posX-(8 * self.width / self.sceneRange), posY],
-                        [posX-(4 * self.width / self.sceneRange), posY-(1 * self.width / self.sceneRange)],
+                        [posX-(4 * self.width / self.sceneRange), posY-(1.0 * self.height / self.sceneRange)],
                         [posX, posY],
-                        [posX-(4 * self.width / self.sceneRange), posY+(1 * self.width / self.sceneRange)]]
+                        [posX-(4 * self.width / self.sceneRange), posY+(1.0 * self.height / self.sceneRange)]]
 
         #display the distance of each boat next to it
         distText = "%.2fm" % distance
@@ -202,9 +204,9 @@ class PyGameUi():
     def updateBoats(self, boats):
         for index, boat in enumerate(boats):
             #calc the height
-            currentLane = (index + 1) * self.laneHeight
-            if(currentLane >= self.height/2): #do not use the players lane
-                currentLane += self.laneHeight
+            if(index >= self.playerLane):
+                index += 1
+            currentLane = (index + 1) * self.laneHeight * (self.height/self.sceneRange)
 
             #calc the horizontal position
             relativeDistance = boat.distance-self.currentDistance
