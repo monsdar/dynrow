@@ -1,6 +1,7 @@
 
 import math
 import pygame
+from Boat import Boat
 from datetime import datetime
 
 # Define the colors we will use in RGB format
@@ -153,7 +154,9 @@ class PyGameUi():
         pygame.draw.line(self.screen, BLACK, [leftSubDividerX, leftHeightDividerY],[leftSubDividerX, self.statPanelHeight], 1)
 
         rightDividerX = (self.width/3)*2
+        rightHeightDivider = self.statPanelHeight / 2.0
         pygame.draw.line(self.screen, BLACK, [rightDividerX, 0],[rightDividerX, self.statPanelHeight], 1)
+        pygame.draw.line(self.screen, BLACK, [rightDividerX, rightHeightDivider],[self.width, rightHeightDivider], 1)
 
         #display the workout time
         timeTxt = self.font72.render("23:59:59", True, BLACK)
@@ -209,6 +212,47 @@ class PyGameUi():
         avgPaceDescPosX = leftDividerX + leftDividerX/2 - (avgPaceDescTxt.get_size()[0]/2.0)
         avgPaceDescPosY = avgPacePosY + avgPaceDescTxt.get_size()[1] + 16
         self.screen.blit(avgPaceDescTxt, (avgPaceDescPosX, avgPaceDescPosY))
+
+        #display the rowed distance
+        distTxt = self.font72.render("%im" % playground.getPlayerBoat().distance, True, BLACK)
+        distPosX = rightDividerX + (self.width-rightDividerX)/2 - (distTxt.get_size()[0] / 2.0)
+        distPosY = rightHeightDivider + (self.statPanelHeight - rightHeightDivider)/2.0 - (distTxt.get_size()[1]/2.0)
+        self.screen.blit(distTxt, (distPosX, distPosY))
+
+        distDescTxt = self.font16.render("Distance", True, BLACK)
+        distDescPosX = rightDividerX + (self.width-rightDividerX)/2 - (distDescTxt.get_size()[0] / 2.0)
+        distDescPosY = distPosY- 16
+        self.screen.blit(distDescTxt, (distDescPosX, distDescPosY))
+
+        #display the ranking list on the right panel
+        orderedBoats = list(playground.boats)             #copy the list, this one will be sorted
+        playerBoat = Boat(playground.getPlayerBoat().name, self.currentDistance) #create a lightweight player-clone to display in this list
+        orderedBoats.append(playerBoat)
+        orderedBoats.sort()                               #sort the boats to display them ordered by distance
+
+        currentHeight = 16
+        for index, boat in enumerate(orderedBoats):
+            txt = "%i - %s" % (index+1, boat.name)
+            boatNameTxt = self.font24.render(txt, True, BLACK)
+            boatNamePosX = rightDividerX + 16
+            boatNamePosY = currentHeight
+            self.screen.blit(boatNameTxt, (boatNamePosX, boatNamePosY))
+
+            txt = "%im" % (boat.distance)
+            boatDistTxt = self.font16.render(txt, True, BLACK)
+            boatDistPosX = self.width - 120 - boatDistTxt.get_size()[0]
+            boatDistPosY = currentHeight + 4
+            self.screen.blit(boatDistTxt, (boatDistPosX, boatDistPosY))
+
+            if not(boat.distance - self.currentDistance == 0):
+                txt = "(%+im)" % (boat.distance - self.currentDistance)
+                boatRelDistTxt = self.font16.render(txt, True, BLACK)
+                boatRelDistPosX = self.width - 16 - boatRelDistTxt.get_size()[0]
+                boatRelDistPosY = currentHeight + 4
+                self.screen.blit(boatRelDistTxt, (boatRelDistPosX, boatRelDistPosY))
+
+            currentHeight += boatNameTxt.get_size()[1]
+
 
     def updateRaceBackground(self, distance):
         #this defines the start and end of the scene

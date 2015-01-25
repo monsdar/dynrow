@@ -23,9 +23,9 @@ def main():
     playground.setPlayerBoat(player)
 
     #init the boats
-    playground.addBoat(BoatConstant("JohnDoe", 190, 35))
-    playground.addBoat(BoatConstant("SlowPoke", 500, 24))
-    playground.addBoat(BoatConstant("Gonzales", 120, 22))
+    playground.addBoat(BoatConstant("Max Mustermann", 190, 35))
+    playground.addBoat(BoatConstant("Jonny Langsam", 500, 24))
+    playground.addBoat(BoatConstant("Speedy Gonzales", 120, 22))
 
     #init the UI, register the GameLoop and run it
     ui.registerCallback(gameLoop)
