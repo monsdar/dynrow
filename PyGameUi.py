@@ -1,6 +1,7 @@
 
 import math
 import pygame
+import time
 from Boat import Boat
 from datetime import datetime
 
@@ -33,19 +34,24 @@ class PyGameUi():
 
         self.callbacks = [] #the callbacks which are called every cycle
         self.starttime = 0
+        self.lastFpsUpdate = 0 #used to update the FPS every now and then
 
         #init PyGame
         pygame.init()
 
         # width and height of the fullscreen window
         modes = pygame.display.list_modes()
-        print 'Using fullscreen resolution:', modes[0]
-        #self.screen = pygame.display.set_mode(modes[0], pygame.FULLSCREEN)
-        #self.width = modes[0][0]
-        #self.height = modes[0][1]
-        self.screen = pygame.display.set_mode([1366, 768])
-        self.width = 1366
-        self.height = 768
+        #TODO: This is just for debugging purposes, but'll probably fuck up the resolution for everyone not using my system setup
+        if(modes[0][0] == 1366):
+            print 'Using fullscreen resolution:', modes[0]
+            self.screen = pygame.display.set_mode(modes[0], pygame.FULLSCREEN)
+            self.width = modes[0][0]
+            self.height = modes[0][1]
+        else:
+            self.screen = pygame.display.set_mode([1366, 768])
+            self.width = 1366
+            self.height = 768
+            print 'Using windowed resolution: %i x %i' % (self.width, self.height)
         self.statPanelHeight = 300
         self.racePanelHeight = self.height - self.statPanelHeight
 
@@ -69,7 +75,6 @@ class PyGameUi():
         while not done:
             #let's lock to 60 FPS
             clock.tick(60)
-            pygame.display.set_caption("%3.2f FPS" % clock.get_fps())
 
             for event in pygame.event.get(): # User did something
                 if (event.type == pygame.QUIT) or (event.type is pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
@@ -87,6 +92,11 @@ class PyGameUi():
             currTime = self.getTimestamp()
             timeGone = currTime - self.starttime
 
+            #update the FPS every second in the window-title (updating too often costs too much performance)
+            if not (int(timeGone/1000.0) == self.lastFpsUpdate):
+                pygame.display.set_caption("%3.2f FPS" % clock.get_fps())
+                self.lastFpsUpdate = int(timeGone/1000.0)
+
             for cb in self.callbacks:
                 cb(timeGone)
 
@@ -97,7 +107,7 @@ class PyGameUi():
         #Quit everything after the GameLoop ends
         pygame.quit()
 
-    def update(self, playground):
+    def update(self, playground, timeGone):
         #Get the current distance from the player boat
         self.currentDistance = playground.getPlayerBoat().distance
         self.adjustDistance(playground.boats, self.currentDistance)
@@ -108,7 +118,7 @@ class PyGameUi():
         self.updateBoats(playground.boats)
 
         #update the stat section
-        self.updateStats(self.currentDistance, playground)
+        self.updateStats(playground, timeGone)
 
     def adjustDistance(self, boats, distance):
         #check the distance from player to the first boat
@@ -141,7 +151,7 @@ class PyGameUi():
             self.sceneStartOffset = -(self.sceneRange/2)
             self.sceneEndOffset = self.sceneRange
 
-    def updateStats(self, currentDistance, playground):
+    def updateStats(self, playground, timeGone):
         self.screen.fill(LIGHTGREY, [[0, 0], [self.width, self.statPanelHeight]])
         pygame.draw.line(self.screen, BLACK, [0, self.statPanelHeight],[self.width, self.statPanelHeight], 3)
 
@@ -159,8 +169,12 @@ class PyGameUi():
         pygame.draw.line(self.screen, BLACK, [rightDividerX, rightHeightDivider],[self.width, rightHeightDivider], 1)
 
         #display the workout time
-        timeTxt = self.font72.render("23:59:59", True, BLACK)
-        timePosX = leftDividerX/2 - (timeTxt.get_size()[0] / 2.0)
+        #NOTE: We're using our own timeGone here instead of the one delivered by the ergometer. I'm not sure if this brings up problems
+        txt = "%.2i:%.2i:%.2i.%.1i" % (int((timeGone/3600000)%24), int((timeGone/60000)%60), int((timeGone/1000)%60), int((timeGone/10)%10) )
+        timeTxt = self.font72.render(txt, True, BLACK)
+        #NOTE: outcommented the generic approach here because it wasn't in a fixed position (text would jitter left and right)
+        #timePosX = leftDividerX/2 - (timeTxt.get_size()[0] / 2.0)
+        timePosX = 58
         timePosY = leftHeightDividerY/2.0 - (timeTxt.get_size()[1] / 2.0)
         self.screen.blit(timeTxt, (timePosX, timePosY))
 
@@ -170,7 +184,8 @@ class PyGameUi():
         self.screen.blit(timeDescTxt, (timeDescPosX, timeDescPosY))
 
         #display the strokes per minute
-        spmTxt = self.font48.render("22", True, BLACK)
+        txt = "%i" % playground.getPlayerBoat().spm
+        spmTxt = self.font48.render(txt, True, BLACK)
         spmPosX = leftSubDividerX/2 - (spmTxt.get_size()[0] / 2.0)
         spmPosY = (leftHeightDividerY + (self.statPanelHeight - leftHeightDividerY)/2.0) - (spmTxt.get_size()[1]/2.0)
         self.screen.blit(spmTxt, (spmPosX, spmPosY))
@@ -181,7 +196,8 @@ class PyGameUi():
         self.screen.blit(spmDescTxt, (spmDescPosX, spmDescPosY))
 
         #display the heart rate
-        pulseTxt = self.font48.render("155", True, BLACK)
+        txt = "%i" % playground.getPlayerBoat().heartrate
+        pulseTxt = self.font48.render(txt, True, BLACK)
         pulsePosX = leftSubDividerX + leftSubDividerX/2 - (pulseTxt.get_size()[0] / 2.0)
         pulsePosY = (leftHeightDividerY + (self.statPanelHeight - leftHeightDividerY)/2.0) - (pulseTxt.get_size()[1]/2.0)
         self.screen.blit(pulseTxt, (pulsePosX, pulsePosY))
@@ -192,8 +208,12 @@ class PyGameUi():
         self.screen.blit(pulseDescTxt, (pulseDescPosX, pulseDescPosY))
 
         #display the 500m pace
-        paceTxt = self.font96.render("2:05.1", True, BLACK)
-        pacePosX = leftDividerX + leftDividerX/2 - (paceTxt.get_size()[0] / 2.0)
+        pace = playground.getPlayerBoat().pace
+        txt = "%.2i:%.2i.%.1i" % (int((pace/60)%60), int((pace)%60), int((pace*10)%10) )
+        paceTxt = self.font96.render(txt, True, BLACK)
+        #NOTE: outcommented the generic approach here because it wasn't in a fixed position (text would jitter left and right)
+        #pacePosX = leftDividerX + leftDividerX/2 - (paceTxt.get_size()[0] / 2.0)
+        pacePosX = leftDividerX + 67.0
         pacePosY = midHeightDivider - (paceTxt.get_size()[1])
         self.screen.blit(paceTxt, (pacePosX, pacePosY))
 
@@ -203,8 +223,13 @@ class PyGameUi():
         self.screen.blit(paceDescTxt, (paceDescPosX, paceDescPosY))
 
         #display the avg 500m avgPace
-        avgPaceTxt = self.font32.render("2:10.3", True, BLACK)
+        #TODO: This is just the actual pace, not the AVG
+        pace = playground.getPlayerBoat().pace
+        txt = "%.2i:%.2i.%.1i" % (int((pace/60)%60), int((pace)%60), int((pace*10)%10) )
+        avgPaceTxt = self.font32.render(txt, True, BLACK)
+        #NOTE: outcommented the generic approach here because it wasn't in a fixed position (text would jitter left and right)
         avgPacePosX = leftDividerX + leftDividerX/2 - (avgPaceTxt.get_size()[0] / 2.0)
+        avgPacePosX = leftDividerX + 175.0
         avgPacePosY = midHeightDivider
         self.screen.blit(avgPaceTxt, (avgPacePosX, avgPacePosY))
 

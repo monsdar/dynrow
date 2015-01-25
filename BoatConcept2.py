@@ -11,6 +11,12 @@ class BoatConcept2(Boat):
     def __init__(self, name, distance=0):
         Boat.__init__(self, name, distance)
         self.erg = None
+        self.spm = 20       #Strokes per Minute
+        self.pace = 10      #pace in seconds (2:15.0 equals 135.0)
+        self.calhr = 10     #TODO: What format does the ergo return?
+        self.power = 150    #Power in Watts
+        self.calories = 0   #Calories burned away
+        self.heartrate = 0  #Heartrate
 
     def initialize(self):
         try:
@@ -44,8 +50,11 @@ class BoatConcept2(Boat):
         try:
             monitor = self.erg.getMonitor() #get monitor data for start of stroke
             self.distance = monitor['distance']
-            #monitor['time']
-            #monitor['spm']
-            #monitor['pace']
+            self.spm = monitor['spm']
+            self.pace = monitor['pace']
+            self.power = monitor['power']
+            self.calhr = monitor['calhr']
+            self.calories = monitor['calories']
+            self.heartrate = monitor['heartrate']
         except:
             print "Error receiving monitor status"
