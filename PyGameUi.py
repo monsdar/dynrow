@@ -49,7 +49,12 @@ class PyGameUi():
         self.racePanelHeight = self.height - self.statPanelHeight
 
         #this is the font we're using throughout the game
-        self.font = pygame.font.SysFont('Arial', 32)
+        self.font16 = pygame.font.SysFont('Arial', 16)
+        self.font24 = pygame.font.SysFont('Arial', 24)
+        self.font32 = pygame.font.SysFont('Arial', 32)
+        self.font48 = pygame.font.SysFont('Arial', 48)
+        self.font72 = pygame.font.SysFont('Arial', 72)
+        self.font96 = pygame.font.SysFont('Arial', 96)
 
     def getTimestamp(self):
         curr = datetime.now()
@@ -98,11 +103,11 @@ class PyGameUi():
 
         #update the racing section
         self.updateRaceBackground(self.currentDistance)
-        self.updatePlayer(self.currentDistance)
+        self.updatePlayer()
         self.updateBoats(playground.boats)
 
         #update the stat section
-        self.updateStatBackground(self.currentDistance)
+        self.updateStats(self.currentDistance, playground)
 
     def adjustDistance(self, boats, distance):
         #check the distance from player to the first boat
@@ -135,8 +140,75 @@ class PyGameUi():
             self.sceneStartOffset = -(self.sceneRange/2)
             self.sceneEndOffset = self.sceneRange
 
-    def updateStatBackground(self, currentDistance):
+    def updateStats(self, currentDistance, playground):
         self.screen.fill(LIGHTGREY, [[0, 0], [self.width, self.statPanelHeight]])
+        pygame.draw.line(self.screen, BLACK, [0, self.statPanelHeight],[self.width, self.statPanelHeight], 3)
+
+        leftDividerX = (self.width/3)*1
+        leftHeightDividerY = self.statPanelHeight / 2.0
+        leftSubDividerX = leftDividerX/2.0
+        midHeightDivider = self.statPanelHeight / 2.0
+        pygame.draw.line(self.screen, BLACK, [leftDividerX, 0],[leftDividerX, self.statPanelHeight], 1)
+        pygame.draw.line(self.screen, BLACK, [0, leftHeightDividerY],[leftDividerX, leftHeightDividerY], 1)
+        pygame.draw.line(self.screen, BLACK, [leftSubDividerX, leftHeightDividerY],[leftSubDividerX, self.statPanelHeight], 1)
+
+        rightDividerX = (self.width/3)*2
+        pygame.draw.line(self.screen, BLACK, [rightDividerX, 0],[rightDividerX, self.statPanelHeight], 1)
+
+        #display the workout time
+        timeTxt = self.font72.render("23:59:59", True, BLACK)
+        timePosX = leftDividerX/2 - (timeTxt.get_size()[0] / 2.0)
+        timePosY = leftHeightDividerY/2.0 - (timeTxt.get_size()[1] / 2.0)
+        self.screen.blit(timeTxt, (timePosX, timePosY))
+
+        timeDescTxt = self.font16.render("Workout Time", True, BLACK)
+        timeDescPosX = leftDividerX/2 - (timeDescTxt.get_size()[0]/2.0)
+        timeDescPosY = timePosY- 16
+        self.screen.blit(timeDescTxt, (timeDescPosX, timeDescPosY))
+
+        #display the strokes per minute
+        spmTxt = self.font48.render("22", True, BLACK)
+        spmPosX = leftSubDividerX/2 - (spmTxt.get_size()[0] / 2.0)
+        spmPosY = (leftHeightDividerY + (self.statPanelHeight - leftHeightDividerY)/2.0) - (spmTxt.get_size()[1]/2.0)
+        self.screen.blit(spmTxt, (spmPosX, spmPosY))
+
+        spmDescTxt = self.font16.render("Strokes per Minute", True, BLACK)
+        spmDescPosX = leftSubDividerX/2 - (spmDescTxt.get_size()[0]/2.0)
+        spmDescPosY = spmPosY- 16
+        self.screen.blit(spmDescTxt, (spmDescPosX, spmDescPosY))
+
+        #display the heart rate
+        pulseTxt = self.font48.render("155", True, BLACK)
+        pulsePosX = leftSubDividerX + leftSubDividerX/2 - (pulseTxt.get_size()[0] / 2.0)
+        pulsePosY = (leftHeightDividerY + (self.statPanelHeight - leftHeightDividerY)/2.0) - (pulseTxt.get_size()[1]/2.0)
+        self.screen.blit(pulseTxt, (pulsePosX, pulsePosY))
+
+        pulseDescTxt = self.font16.render("Heart Rate", True, BLACK)
+        pulseDescPosX = leftSubDividerX + leftSubDividerX/2 - (pulseDescTxt.get_size()[0]/2.0)
+        pulseDescPosY = pulsePosY- 16
+        self.screen.blit(pulseDescTxt, (pulseDescPosX, pulseDescPosY))
+
+        #display the 500m pace
+        paceTxt = self.font96.render("2:05.1", True, BLACK)
+        pacePosX = leftDividerX + leftDividerX/2 - (paceTxt.get_size()[0] / 2.0)
+        pacePosY = midHeightDivider - (paceTxt.get_size()[1])
+        self.screen.blit(paceTxt, (pacePosX, pacePosY))
+
+        paceDescTxt = self.font16.render("Pace /500m", True, BLACK)
+        paceDescPosX = leftDividerX + leftDividerX/2 - (paceDescTxt.get_size()[0]/2.0)
+        paceDescPosY = pacePosY- 16
+        self.screen.blit(paceDescTxt, (paceDescPosX, paceDescPosY))
+
+        #display the avg 500m avgPace
+        avgPaceTxt = self.font32.render("2:10.3", True, BLACK)
+        avgPacePosX = leftDividerX + leftDividerX/2 - (avgPaceTxt.get_size()[0] / 2.0)
+        avgPacePosY = midHeightDivider
+        self.screen.blit(avgPaceTxt, (avgPacePosX, avgPacePosY))
+
+        avgPaceDescTxt = self.font16.render("Avg Pace /500m", True, BLACK)
+        avgPaceDescPosX = leftDividerX + leftDividerX/2 - (avgPaceDescTxt.get_size()[0]/2.0)
+        avgPaceDescPosY = avgPacePosY + avgPaceDescTxt.get_size()[1] + 16
+        self.screen.blit(avgPaceDescTxt, (avgPaceDescPosX, avgPaceDescPosY))
 
     def updateRaceBackground(self, distance):
         #this defines the start and end of the scene
@@ -165,21 +237,25 @@ class PyGameUi():
                     pygame.draw.circle(self.screen, LIGHTGREY, [int(linePos), int(heightPos + (self.laneHeight/2) * heightFactor)], 2)
                     pygame.draw.circle(self.screen, BLACK, [int(linePos), int(heightPos + (self.laneHeight/2) * heightFactor)], 2, 1)
 
-            #display the distance marker
+            #display the distance markers
             lineText = str(prevOffset)
+            markerTxt = self.font16.render(lineText, True, NAVY)
+            markerTxtX = linePos+15
+            markerTxtY = self.statPanelHeight+16 - markerTxt.get_size()[1]/2.0
             pygame.draw.line(self.screen, NAVY, [linePos, self.statPanelHeight], [linePos, self.statPanelHeight+20], 1)
-            self.screen.blit(self.font.render(lineText, True, NAVY), (linePos+15, self.statPanelHeight+8))
 
-    def updatePlayer(self, distance):
+            self.screen.blit(markerTxt, (markerTxtX, markerTxtY))
+
+    def updatePlayer(self):
         #the following factors are used to calculate from a distance in meters into a distance on the
         #screen (1m in our simulation is not 1px on the screen, depends on the sceneRange we've got)
         heightFactor = self.racePanelHeight / self.sceneRange
 
         currentHeight = (self.playerLane + 1) * self.laneHeight * heightFactor + self.statPanelHeight
         pos = {"posX": self.width/2 , "posY": currentHeight}
-        self.printBoat(pos, distance, DARKORANGE)
+        self.printBoat(pos, "Player", DARKORANGE)
 
-    def printBoat(self, position, distance, color):
+    def printBoat(self, position, name, color):
         #the following factors are used to calculate from a distance in meters into a distance on the
         #screen (1m in our simulation is not 1px on the screen, depends on the sceneRange we've got)
         heightFactor = self.racePanelHeight / self.sceneRange
@@ -188,26 +264,23 @@ class PyGameUi():
         posX = position["posX"]
         posY = position["posY"]
         #this is how the boat looks:
-        boatPolygon = [ [posX-(8 * widthFactor), posY],
-                        [posX-(4 * widthFactor), posY-(1.5 * heightFactor)],
+        boatPolygon = [ [posX-(6 * widthFactor), posY-(1.0 * heightFactor)],
+                        [posX-(5 * widthFactor), posY-(1.5 * heightFactor)],
+                        [posX-(3 * widthFactor), posY-(1.5 * heightFactor)],
                         [posX, posY],
-                        [posX-(4 * widthFactor), posY+(1.5 * heightFactor)]]
+                        [posX-(3 * widthFactor), posY+(1.5 * heightFactor)],
+                        [posX-(5 * widthFactor), posY+(1.5 * heightFactor)],
+                        [posX-(6 * widthFactor), posY+(1.0 * heightFactor)]]
 
-        #display the distance of each boat next to it
+        #display the name of each boat on its lane
+        nameTxt = self.font32.render(name, True, NAVY)
+        txtX = 10
+        txtY = posY - nameTxt.get_size()[1] / 2.0
+        self.screen.blit(nameTxt, (txtX, txtY))
+
+        #display the boat
         pygame.draw.polygon(self.screen, color, boatPolygon)
-        pygame.draw.polygon(self.screen, BLACK, boatPolygon, 1)
-
-        if(distance == self.currentDistance):
-            distText = "%.0fm" % distance
-        else:
-            distText = "%.0fm" % float(distance - self.currentDistance)
-        txtX = posX - (10 * widthFactor)
-        if(txtX < 10):
-            txtX = 10
-        elif(txtX > (self.width - 100)):
-            txtX = (self.width - 100)
-        txtY = posY - (1.0 * heightFactor)
-        self.screen.blit(self.font.render(distText, True, NAVY), (txtX, txtY))
+        pygame.draw.polygon(self.screen, BLACK, boatPolygon, 2)
 
     def updateBoats(self, boats):
         #the following factors are used to calculate from a distance in meters into a distance on the
@@ -227,7 +300,7 @@ class PyGameUi():
 
             #print the boat
             pos = {"posX": boatPos, "posY": currentLane }
-            self.printBoat(pos, boat.distance, GREEN)
+            self.printBoat(pos, boat.name, GREEN)
 
     def registerCallback(self, callback):
         self.callbacks.append(callback)
