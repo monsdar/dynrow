@@ -1,7 +1,9 @@
 from UI.PyGameUi import PyGameUi
 from Boats.BoatConstant import BoatConstant
 from Boats.BoatConcept2 import BoatConcept2
+from Boats.BoatRubberband import BoatRubberband
 from Logic.Playground import Playground
+from PyRow.ErgStats import ErgStats
 
 DELTAT = 16  # run with ~60FPS
 playground = Playground()  # the playground is a class which holds all the information (all the boats etc)
@@ -13,17 +15,19 @@ def gameLoop(timeGone):
     ui.update(playground, timeGone)
 
 def main():
-    # init the player
-    player = BoatConcept2("Player")
     # The Concept2-boat needs to get initialized
     # This is a blocking call which only returns after the workout has been started
-    player.initialize()
+    ErgStats.initialize()
+
+    # init the player boat
+    player = BoatConcept2("Player")
     playground.setPlayerBoat(player)
 
-    #init the boats
-    playground.addBoat(BoatConstant("Max Mustermann", 190, 35))
-    playground.addBoat(BoatConstant("Jonny Langsam", 500, 24))
-    playground.addBoat(BoatConstant("Speedy Gonzales", 120, 22))
+    #init the other boats
+    playground.addBoat(BoatRubberband("Max Mustermann", 160, 35, 10))
+    playground.addBoat(BoatRubberband("Jonny Langsam", 500, 24, 10))
+    playground.addBoat(BoatRubberband("Speedy Gonzales", 120, 22, 10))
+    playground.addBoat(BoatRubberband("PlayerClone", 135.2, 20))
 
     #init the UI, register the GameLoop and run it
     ui.registerCallback(gameLoop)

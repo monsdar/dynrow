@@ -3,6 +3,7 @@ from datetime import datetime
 import pygame
 
 from Logic.Boat import Boat
+from PyRow.ErgStats import ErgStats
 
 
 # Define the colors we will use in RGB format
@@ -184,7 +185,7 @@ class PyGameUi():
         self.screen.blit(timeDescTxt, (timeDescPosX, timeDescPosY))
 
         #display the strokes per minute
-        txt = "%i" % playground.getPlayerBoat().spm
+        txt = "%i" % ErgStats.spm
         spmTxt = self.font48.render(txt, True, BLACK)
         spmPosX = leftSubDividerX/2 - (spmTxt.get_size()[0] / 2.0)
         spmPosY = (leftHeightDividerY + (self.statPanelHeight - leftHeightDividerY)/2.0) - (spmTxt.get_size()[1]/2.0)
@@ -196,7 +197,7 @@ class PyGameUi():
         self.screen.blit(spmDescTxt, (spmDescPosX, spmDescPosY))
 
         #display the heart rate
-        txt = "%i" % playground.getPlayerBoat().heartrate
+        txt = "%i" % ErgStats.heartrate
         pulseTxt = self.font48.render(txt, True, BLACK)
         pulsePosX = leftSubDividerX + leftSubDividerX/2 - (pulseTxt.get_size()[0] / 2.0)
         pulsePosY = (leftHeightDividerY + (self.statPanelHeight - leftHeightDividerY)/2.0) - (pulseTxt.get_size()[1]/2.0)
@@ -208,7 +209,7 @@ class PyGameUi():
         self.screen.blit(pulseDescTxt, (pulseDescPosX, pulseDescPosY))
 
         #display the 500m pace
-        pace = playground.getPlayerBoat().pace
+        pace = ErgStats.pace
         txt = "%.2i:%.2i.%.1i" % (int((pace/60)%60), int((pace)%60), int((pace*10)%10) )
         paceTxt = self.font96.render(txt, True, BLACK)
         #NOTE: outcommented the generic approach here because it wasn't in a fixed position (text would jitter left and right)
@@ -224,7 +225,7 @@ class PyGameUi():
 
         #display the avg 500m avgPace
         #TODO: This is just the actual pace, not the AVG
-        pace = playground.getPlayerBoat().pace
+        pace = ErgStats.pace
         txt = "%.2i:%.2i.%.1i" % (int((pace/60)%60), int((pace)%60), int((pace*10)%10) )
         avgPaceTxt = self.font32.render(txt, True, BLACK)
         #NOTE: outcommented the generic approach here because it wasn't in a fixed position (text would jitter left and right)
@@ -239,7 +240,7 @@ class PyGameUi():
         self.screen.blit(avgPaceDescTxt, (avgPaceDescPosX, avgPaceDescPosY))
 
         #display the rowed distance
-        distTxt = self.font72.render("%im" % playground.getPlayerBoat().distance, True, BLACK)
+        distTxt = self.font72.render("%im" % ErgStats.distance, True, BLACK)
         distPosX = rightDividerX + (self.width-rightDividerX)/2 - (distTxt.get_size()[0] / 2.0)
         distPosY = rightHeightDivider + (self.statPanelHeight - rightHeightDivider)/2.0 - (distTxt.get_size()[1]/2.0)
         self.screen.blit(distTxt, (distPosX, distPosY))

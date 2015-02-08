@@ -1,3 +1,6 @@
+
+from PyRow.ErgStats import ErgStats
+
 class Playground():
     def __init__(self):
         self.boats = []
@@ -19,6 +22,9 @@ class Playground():
         self.playerBoat = boat
         
     def update(self, timeGone):
+        #update the ergometer data
+        ErgStats.update()
+
         #move all the bots
         for boat in self.boats:
             boat.move(timeGone)
