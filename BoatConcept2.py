@@ -12,11 +12,11 @@ class BoatConcept2(Boat):
         Boat.__init__(self, name, distance)
         self.erg = None
         self.spm = 20       #Strokes per Minute
-        self.pace = 10      #pace in seconds (2:15.0 equals 135.0)
+        self.pace = 135.2   #pace in seconds (2:15.0 equals 135.0)
         self.calhr = 10     #TODO: What format does the ergo return?
         self.power = 150    #Power in Watts
         self.calories = 0   #Calories burned away
-        self.heartrate = 0  #Heartrate
+        self.heartrate = 155#Heartrate
 
     def initialize(self):
         try:
