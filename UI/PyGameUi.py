@@ -1,9 +1,9 @@
-
-import math
-import pygame
-import time
-from Boat import Boat
 from datetime import datetime
+
+import pygame
+
+from Logic.Boat import Boat
+
 
 # Define the colors we will use in RGB format
 LIGHTSTEELBLUE  = (135, 206, 250)

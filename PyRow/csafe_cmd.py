@@ -5,7 +5,8 @@
 #   Please report and findings to the author so that they may be addressed in a stable release. 
 
 #ToDo: change print statments to proper errors
-import csafe_dic
+from PyRow import csafe_dic
+
 
 def __int2bytes(numbytes, integer):
 	if not(0 <= integer <= 2 ** (8 * numbytes)): print "Integer is outside the allowable range"
@@ -110,7 +111,7 @@ def Write(arguments):
 		
 		#byte stuffing
 		if 0xF0 <= message[j] <= 0xF3:
-			message.insert(j,csafe_dic.Byte_Stuffing_Flag)
+			message.insert(j, csafe_dic.Byte_Stuffing_Flag)
 			j += 1
 			message[j] = message[j] & 0x3
 			
@@ -120,7 +121,7 @@ def Write(arguments):
 	message.append(checksum)
 	
 	#start & stop frames
-	message.insert(0,csafe_dic.Standard_Frame_Start_Flag)
+	message.insert(0, csafe_dic.Standard_Frame_Start_Flag)
 	message.append(csafe_dic.Stop_Frame_Flag)
 	
 	#check for frame size (96 bytes)

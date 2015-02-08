@@ -1,8 +1,10 @@
-from Boat import Boat
 import time
 
+from Logic.Boat import Boat
+
+
 try:
-    import pyrow
+    from PyRow import pyrow
 except Exception as e:
     print "Error importing Pyrow: " + str(e)
 

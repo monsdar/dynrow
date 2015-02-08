@@ -1,9 +1,7 @@
-from PyGameUi import PyGameUi
-from BoatConstant import BoatConstant
-from BoatConcept2 import BoatConcept2
-from Playground import Playground
-
-import time
+from UI.PyGameUi import PyGameUi
+from Boats.BoatConstant import BoatConstant
+from Boats.BoatConcept2 import BoatConcept2
+from Logic.Playground import Playground
 
 DELTAT = 16  # run with ~60FPS
 playground = Playground()  # the playground is a class which holds all the information (all the boats etc)

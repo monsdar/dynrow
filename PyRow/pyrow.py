@@ -5,12 +5,13 @@
 #   Please report and findings to the author so that they may be addressed in a stable release. 
 
 
+import datetime
+import sys
+
 import usb.core
 import usb.util
-import csafe_cmd
-import datetime
-import time
-import sys
+from PyRow import csafe_cmd
+
 
 #move what I can into class?
 c2vendorID = 0x17a4

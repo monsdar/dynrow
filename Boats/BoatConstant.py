@@ -1,6 +1,7 @@
-
-from Boat import Boat
 import math
+
+from Logic.Boat import Boat
+
 
 class BoatConstant(Boat):
     def __init__(self, name, pace=150, spm=20, distance=0):

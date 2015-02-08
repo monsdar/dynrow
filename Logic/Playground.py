@@ -1,6 +1,3 @@
-
-from Boat import Boat
-
 class Playground():
     def __init__(self):
         self.boats = []
