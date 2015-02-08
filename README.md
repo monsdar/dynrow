@@ -4,6 +4,7 @@ DynRow connects to the Concept2 Ergometer and shows a birds-eye view of you rowi
 Here are some vieos to get a basic idea of how it looks like and what it does:
 * [0.1: First Prototype](http://youtu.be/gBvpYNmO__Y)
 * [0.2: Initially uploaded version](http://youtu.be/8LIEzyJB_4k)
+* [0.3: First version with stats being shown](http://youtu.be/3XJ9Eh7riac)
 
 My vision is to create a rowing application which displays thorough statistics about your current workout. In addition to that there should be a variety of bots available. Here are a few ideas:
 * *Constant pace:* This is useful if you want to row in a certain tempo
