@@ -13,10 +13,13 @@ class ErgStats:
     distance = 0.0 #distance in m
     spm = 20       #Strokes per Minute
     pace = 135.2   #pace in seconds (2:15.0 equals 135.0)
+    avgPace = 0.0  #the average pace for the current session
     calhr = 10     #TODO: What format does the ergo return?
     power = 150    #Power in Watts
     calories = 0   #Calories burned away
     heartrate = 155#Heartrate
+
+    numQueries = 0 #the number of queries done to the ergometer. This is needed e.g. to calc the average pace
 
     @staticmethod
     def initialize():
@@ -44,11 +47,6 @@ class ErgStats:
 
     @staticmethod
     def update():
-        #TODO: This is just for testing purposes. It simulates a moving boat by increasing the distance every cycle
-        if (ErgStats.erg == None):
-            ErgStats.distance += 0.0591715976331361
-            return
-
         #Get the distance from the Concept2 ergo. Do nothing if errors occur
         try:
             monitor = ErgStats.erg.getMonitor() #get monitor data for start of stroke
@@ -59,5 +57,18 @@ class ErgStats:
             ErgStats.calhr = monitor['calhr']
             ErgStats.calories = monitor['calories']
             ErgStats.heartrate = monitor['heartrate']
+
         except:
-            print "Error receiving monitor status"
+            #print "Error receiving monitor status"
+            pass
+
+        #calc the pace
+        if(ErgStats.avgPace <= 0.000001):
+            ErgStats.avgPace = ErgStats.pace
+        ErgStats.avgPace = ((ErgStats.avgPace * ErgStats.numQueries) + ErgStats.pace) / (ErgStats.numQueries + 1)
+        ErgStats.numQueries += 1
+
+        #TODO: This is just for testing purposes. It simulates a moving boat by increasing the distance every cycle
+        if (ErgStats.erg == None):
+            ErgStats.distance += 0.0591715976331361
+            return
