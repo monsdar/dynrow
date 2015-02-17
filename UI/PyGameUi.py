@@ -325,9 +325,9 @@ class PyGameUi():
 
         currentHeight = (self.playerLane + 1) * self.laneHeight * heightFactor + self.statPanelHeight
         pos = {"posX": self.width/2 , "posY": currentHeight}
-        self.printBoat(pos, "Player", DARKORANGE)
+        self.printBoat(pos, "Player", DARKORANGE, ErgStats.pace)
 
-    def printBoat(self, position, name, color):
+    def printBoat(self, position, name, color, pace):
         #the following factors are used to calculate from a distance in meters into a distance on the
         #screen (1m in our simulation is not 1px on the screen, depends on the sceneRange we've got)
         heightFactor = self.racePanelHeight / self.sceneRange
@@ -344,11 +344,18 @@ class PyGameUi():
                         [posX-(5 * widthFactor), posY+(1.5 * heightFactor)],
                         [posX-(6 * widthFactor), posY+(1.0 * heightFactor)]]
 
-        #display the name of each boat on its lane
+        #display the name of each boat on its lane to the left
         nameTxt = self.font32.render(name, True, NAVY)
         txtX = 10
         txtY = posY - nameTxt.get_size()[1] / 2.0
         self.screen.blit(nameTxt, (txtX, txtY))
+
+        #display the pace of each boat on its lane to the right
+        txt = "%.2i:%.2i.%.1i" % (int((pace/60)%60), int((pace)%60), int((pace*10)%10) )
+        paceTxt = self.font32.render(str(txt), True, NAVY)
+        txtX = self.width - paceTxt.get_size()[0] - 10
+        txtY = posY - paceTxt.get_size()[1] / 2.0
+        self.screen.blit(paceTxt, (txtX, txtY))
 
         #display the boat
         pygame.draw.polygon(self.screen, color, boatPolygon)
@@ -372,7 +379,7 @@ class PyGameUi():
 
             #print the boat
             pos = {"posX": boatPos, "posY": currentLane }
-            self.printBoat(pos, boat.name, GREEN)
+            self.printBoat(pos, boat.name, GREEN, boat.pace)
 
     def registerCallback(self, callback):
         self.callbacks.append(callback)
