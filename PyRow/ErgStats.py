@@ -13,13 +13,13 @@ class ErgStats:
     distance = 0.0 #distance in m
     spm = 20       #Strokes per Minute
     pace = 135.2   #pace in seconds (2:15.0 equals 135.0)
-    avgPace = 0.0  #the average pace for the current session
+    avgPace = 10.0  #the average pace for the current session
     calhr = 10     #TODO: What format does the ergo return?
     power = 150    #Power in Watts
     calories = 0   #Calories burned away
     heartrate = 155#Heartrate
 
-    numQueries = 0 #the number of queries done to the ergometer. This is needed e.g. to calc the average pace
+    numQueries = 100 #the number of queries done to the ergometer. This is needed e.g. to calc the average pace
 
     @staticmethod
     def initialize():

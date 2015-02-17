@@ -226,13 +226,13 @@ class PyGameUi():
         #display the avg 500m avgPace
         minutes = int((ErgStats.avgPace/60)%60)
         seconds = int((ErgStats.avgPace)%60)
-        millsecs = int(((ErgStats.avgPace*10)%10) + 0.000001) #need to add a small value to equalize floating point inconsistencies
-        txt = "%.2i:%.2i.%.1i" % (minutes, seconds, millsecs)
+        millsecs = int(((ErgStats.avgPace*1000)%1000) + 0.000001) #need to add a small value to equalize floating point inconsistencies
+        txt = "%.2i:%.2i.%.3i" % (minutes, seconds, millsecs)
         avgPaceTxt = self.font32.render(txt, True, BLACK)
 
         #NOTE: outcommented the generic approach here because it wasn't in a fixed position (text would jitter left and right)
         #avgPacePosX = leftDividerX + leftDividerX/2 - (avgPaceTxt.get_size()[0] / 2.0)
-        avgPacePosX = leftDividerX + 175.0
+        avgPacePosX = leftDividerX + 156.0
         avgPacePosY = midHeightDivider
         self.screen.blit(avgPaceTxt, (avgPacePosX, avgPacePosY))
 
