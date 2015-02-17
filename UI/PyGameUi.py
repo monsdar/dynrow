@@ -186,7 +186,7 @@ class PyGameUi():
 
         #display the strokes per minute
         txt = "%i" % ErgStats.spm
-        spmTxt = self.font48.render(txt, True, BLACK)
+        spmTxt = self.font72.render(txt, True, BLACK)
         spmPosX = leftSubDividerX/2 - (spmTxt.get_size()[0] / 2.0)
         spmPosY = (leftHeightDividerY + (self.statPanelHeight - leftHeightDividerY)/2.0) - (spmTxt.get_size()[1]/2.0)
         self.screen.blit(spmTxt, (spmPosX, spmPosY))
@@ -198,7 +198,7 @@ class PyGameUi():
 
         #display the heart rate
         txt = "%i" % ErgStats.heartrate
-        pulseTxt = self.font48.render(txt, True, BLACK)
+        pulseTxt = self.font72.render(txt, True, BLACK)
         pulsePosX = leftSubDividerX + leftSubDividerX/2 - (pulseTxt.get_size()[0] / 2.0)
         pulsePosY = (leftHeightDividerY + (self.statPanelHeight - leftHeightDividerY)/2.0) - (pulseTxt.get_size()[1]/2.0)
         self.screen.blit(pulseTxt, (pulsePosX, pulsePosY))
@@ -228,17 +228,17 @@ class PyGameUi():
         seconds = int((ErgStats.avgPace)%60)
         millsecs = int(((ErgStats.avgPace*1000)%1000) + 0.000001) #need to add a small value to equalize floating point inconsistencies
         txt = "%.2i:%.2i.%.3i" % (minutes, seconds, millsecs)
-        avgPaceTxt = self.font32.render(txt, True, BLACK)
+        avgPaceTxt = self.font48.render(txt, True, BLACK)
 
         #NOTE: outcommented the generic approach here because it wasn't in a fixed position (text would jitter left and right)
         #avgPacePosX = leftDividerX + leftDividerX/2 - (avgPaceTxt.get_size()[0] / 2.0)
-        avgPacePosX = leftDividerX + 156.0
+        avgPacePosX = leftDividerX + 121.0
         avgPacePosY = midHeightDivider
         self.screen.blit(avgPaceTxt, (avgPacePosX, avgPacePosY))
 
         avgPaceDescTxt = self.font16.render("Avg Pace /500m", True, BLACK)
         avgPaceDescPosX = leftDividerX + leftDividerX/2 - (avgPaceDescTxt.get_size()[0]/2.0)
-        avgPaceDescPosY = avgPacePosY + avgPaceDescTxt.get_size()[1] + 16
+        avgPaceDescPosY = avgPacePosY + avgPaceDescTxt.get_size()[1] + 40
         self.screen.blit(avgPaceDescTxt, (avgPaceDescPosX, avgPaceDescPosY))
 
         #display the rowed distance
@@ -258,23 +258,19 @@ class PyGameUi():
         orderedBoats.append(playerBoat)
         orderedBoats.sort()                               #sort the boats to display them ordered by distance
 
-        currentHeight = 16
+        currentHeight = 0 #this is the offset in height where the list starts
         for index, boat in enumerate(orderedBoats):
+            #display position and name
             txt = "%i - %s" % (index+1, boat.name)
-            boatNameTxt = self.font24.render(txt, True, BLACK)
+            boatNameTxt = self.font32.render(txt, True, BLACK)
             boatNamePosX = rightDividerX + 16
             boatNamePosY = currentHeight
             self.screen.blit(boatNameTxt, (boatNamePosX, boatNamePosY))
 
-            txt = "%im" % (boat.distance)
-            boatDistTxt = self.font16.render(txt, True, BLACK)
-            boatDistPosX = self.width - 120 - boatDistTxt.get_size()[0]
-            boatDistPosY = currentHeight + 4
-            self.screen.blit(boatDistTxt, (boatDistPosX, boatDistPosY))
-
+            #display delta to player distance
             if not(boat.distance - self.currentDistance == 0):
-                txt = "(%+im)" % (boat.distance - self.currentDistance)
-                boatRelDistTxt = self.font16.render(txt, True, BLACK)
+                txt = "%+im" % (boat.distance - self.currentDistance)
+                boatRelDistTxt = self.font32.render(txt, True, BLACK)
                 boatRelDistPosX = self.width - 16 - boatRelDistTxt.get_size()[0]
                 boatRelDistPosY = currentHeight + 4
                 self.screen.blit(boatRelDistTxt, (boatRelDistPosX, boatRelDistPosY))

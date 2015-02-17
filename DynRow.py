@@ -27,7 +27,6 @@ def main():
     playground.addBoat(BoatRubberband("Max Mustermann", 160, 35, 10))
     playground.addBoat(BoatRubberband("Jonny Langsam", 500, 24, 10))
     playground.addBoat(BoatRubberband("Speedy Gonzales", 120, 22, 10))
-    playground.addBoat(BoatRubberband("PlayerClone", 135.2, 20))
 
     #init the UI, register the GameLoop and run it
     ui.registerCallback(gameLoop)
