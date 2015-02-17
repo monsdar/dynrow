@@ -1,7 +1,6 @@
 from UI.PyGameUi import PyGameUi
 from Boats.BoatConstant import BoatConstant
 from Boats.BoatConcept2 import BoatConcept2
-from Boats.BoatRubberband import BoatRubberband
 from Boats.BoatBoomerang import BoatBoomerang
 from Logic.Playground import Playground
 from PyRow.ErgStats import ErgStats
@@ -25,9 +24,9 @@ def main():
     playground.setPlayerBoat(player)
 
     #init the other boats
-    playground.addBoat(BoatBoomerang("Bob Boomerang", 160, 20, 10))
-    playground.addBoat(BoatRubberband("Roy Rubberband", 160, 22, 10))
-    playground.addBoat(BoatConstant("Carl Constant", 130, 26, 10))
+    playground.addBoat(BoatBoomerang("Armin", 160, 20, 20))
+    playground.addBoat(BoatBoomerang("Bahne", 140, 22, 20))
+    playground.addBoat(BoatBoomerang("Matthias", 130, 26, 20))
 
     #init the UI, register the GameLoop and run it
     ui.registerCallback(gameLoop)
