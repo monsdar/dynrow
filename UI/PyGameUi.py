@@ -271,7 +271,7 @@ class PyGameUi():
             if not(boat.distance - self.currentDistance == 0):
                 txt = "%+im" % (boat.distance - self.currentDistance)
                 boatRelDistTxt = self.font32.render(txt, True, BLACK)
-                boatRelDistPosX = self.width - 16 - boatRelDistTxt.get_size()[0]
+                boatRelDistPosX = self.width - 32 - boatRelDistTxt.get_size()[0]
                 boatRelDistPosY = currentHeight + 4
                 self.screen.blit(boatRelDistTxt, (boatRelDistPosX, boatRelDistPosY))
 
