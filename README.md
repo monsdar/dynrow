@@ -8,7 +8,7 @@ Here are some vieos to get a basic idea of how it looks like and what it does:
 
 My vision is to create a rowing application which displays thorough statistics about your current workout. In addition to that there should be a variety of bots available. Here are a few ideas:
 * *Constant pace:* This is useful if you want to row in a certain tempo
-* *Rubberband:* They're rowing at a constant pace, but if they get behind you they will row faster. If they get too far in front, they'll decelerate to let you keep up with them
+* *Boomerang:* They're rowing at a constant pace, but if they get behind you they will row faster. If they get too far in front, they'll decelerate to let you keep up with them. They're almost like the constant pace boats, but they'll always be around. This leads to having opponents around even at the longest training sessions
 * *Heartrate:* You set up your desired target heart rate and the bot will row faster/slower according to your current heart rate
 * *Ghostrider:* This bot replays a previously rowing session of yourself
 * *Intervals:* Usually this bot runs on a constant pace, but it'll push the tempo from time to time. Try to keep pace
