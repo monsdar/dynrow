@@ -24,6 +24,6 @@ class BoatConstant(Boat):
         strokesPerSecond = self.spm / 60.0
         velocity = 500.0 / self.pace
 
-        timeGoneMs = ((timeGone - self.offsetTime) / 1000.0) #time is given in milliseconds, we need seconds
-        timeCalc = timeGoneMs + self.amplitude * -math.sin(timeGoneMs * strokesPerSecond * 2.0 * math.pi)
+        timeGoneOffset = (timeGone - self.offsetTime) #apply theo ffset onto the time
+        timeCalc = timeGoneOffset + self.amplitude * -math.sin(timeGoneOffset * strokesPerSecond * 2.0 * math.pi)
         self.distance = self.offsetDist + (velocity * timeCalc)

@@ -18,6 +18,7 @@ class ErgStats:
     power = 150    #Power in Watts
     calories = 0   #Calories burned away
     heartrate = 155#Heartrate
+    time = 0.0     #the time of the ergometer, this is important to use because it pauses if the user pauses etc
 
     numQueries = 0 #the number of queries done to the ergometer. This is needed e.g. to calc the average pace
 
@@ -57,6 +58,7 @@ class ErgStats:
             ErgStats.calhr = monitor['calhr']
             ErgStats.calories = monitor['calories']
             ErgStats.heartrate = monitor['heartrate']
+            ErgStats.time = monitor['time']
 
         except:
             #print "Error receiving monitor status"
@@ -70,5 +72,10 @@ class ErgStats:
 
         #TODO: This is just for testing purposes. It simulates a moving boat by increasing the distance every cycle
         if (ErgStats.erg == None):
-            ErgStats.distance += (0.0591715976331361)
+            #assuming stable 62.5 FPS
+            #NOTE: The following plays the simulation at 10x speed
+            ErgStats.distance += (0.0591715976331361) * 10.0
+            ErgStats.time += 0.016 * 10.0
+            #ErgStats.distance += (0.0591715976331361)
+            #ErgStats.time += 0.016
             return

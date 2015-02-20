@@ -24,25 +24,23 @@ class BoatBoomerang(Boat):
         self.offsetDist = self.distance
 
     def move(self, timeGone):
-        currentSec = int((timeGone / 1000.0) % 10)
+        currentSec = int((timeGone) % 10)
         if( currentSec != self.lastSecCheck ):
             #if the boat is out of the given distance change the pace get back to the player
             distToPlayer = self.distance - ErgStats.distance
+
             if(distToPlayer > self.boomerDistance and (not self.pace >= ErgStats.pace) ):
-                print "Slower!"
-                self.changePace(ErgStats.pace + 5.0)
+                self.changePace(ErgStats.pace + 5.0) #check if we need to row slower
             elif(distToPlayer < -self.boomerDistance and (not self.pace <= ErgStats.pace) ):
-                print "Faster!"
-                self.changePace(ErgStats.pace - 5.0)
+                self.changePace(ErgStats.pace - 5.0) #or faster
             elif((distToPlayer <= 1.0) and (distToPlayer >= -1.0) and (not self.pace == self.originalPace)):
-                print "Original Pace!"
-                self.changePace(self.originalPace)
+                self.changePace(self.originalPace) #or get back to the original pace
             self.lastSecCheck = currentSec
 
         self.currentTime = timeGone
         strokesPerSecond = self.spm / 60.0
         velocity = 500.0 / self.pace
 
-        timeGoneMs = ((timeGone - self.offsetTime) / 1000.0) #time is given in milliseconds, we need seconds
-        timeCalc = timeGoneMs + self.amplitude * -math.sin(timeGoneMs * strokesPerSecond * 2.0 * math.pi)
+        timeGoneOffset = (timeGone - self.offsetTime) #calc the offset onto the time
+        timeCalc = timeGoneOffset + self.amplitude * -math.sin(timeGoneOffset * strokesPerSecond * 2.0 * math.pi)
         self.distance = self.offsetDist + (velocity * timeCalc)

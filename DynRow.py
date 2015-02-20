@@ -12,7 +12,7 @@ ui = PyGameUi() # the UI which will display the playground on a graphical interf
 
 def gameLoop(timeGone):
     playground.update(timeGone)
-    ui.update(playground, timeGone)
+    ui.update(playground)
 
 def main():
     # The Concept2-boat needs to get initialized

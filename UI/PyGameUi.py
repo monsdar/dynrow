@@ -34,7 +34,6 @@ class PyGameUi():
         self.currentDistance = 0.0
 
         self.callbacks = [] #the callbacks which are called every cycle
-        self.starttime = 0
         self.lastFpsUpdate = 0 #used to update the FPS every now and then
 
         #init PyGame
@@ -64,10 +63,6 @@ class PyGameUi():
         self.font72 = pygame.font.SysFont('Arial', 72)
         self.font96 = pygame.font.SysFont('Arial', 96)
 
-    def getTimestamp(self):
-        curr = datetime.now()
-        return curr.day * 24 * 60 * 1000 * 1000 + curr.hour * 60 * 1000 * 1000 + curr.minute * 60 * 1000 + curr.second * 1000 + curr.microsecond / 1000
-
     def run(self):
         #Loop until the user clicks the close button.
         done = False
@@ -80,26 +75,17 @@ class PyGameUi():
             for event in pygame.event.get(): # User did something
                 if (event.type == pygame.QUIT) or (event.type is pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
                     done=True # Flag that we are done so we exit this loop
-                    continue #Why waste time to paint one last time?
 
             # Clear the screen and set the screen background
             self.screen.fill(LIGHTSTEELBLUE)
 
-            #if time hasn't been set yet, do it now
-            if(self.starttime == 0):
-                self.starttime = self.getTimestamp()
-
-            #calc how much time has been gone
-            currTime = self.getTimestamp()
-            timeGone = currTime - self.starttime
-
             #update the FPS every second in the window-title (updating too often costs too much performance)
-            if not (int(timeGone/1000.0) == self.lastFpsUpdate):
+            if not (int(ErgStats.time) == self.lastFpsUpdate):
                 pygame.display.set_caption("%3.2f FPS" % clock.get_fps())
-                self.lastFpsUpdate = int(timeGone/1000.0)
+                self.lastFpsUpdate = int(ErgStats.time)
 
             for cb in self.callbacks:
-                cb(timeGone)
+                cb(ErgStats.time)
 
             # Go ahead and update the screen with what we've drawn.
             # This MUST happen after all the other drawing commands.
@@ -108,7 +94,7 @@ class PyGameUi():
         #Quit everything after the GameLoop ends
         pygame.quit()
 
-    def update(self, playground, timeGone):
+    def update(self, playground):
         #Get the current distance from the player boat
         self.currentDistance = playground.getPlayerBoat().distance
         self.adjustDistance(playground.boats, self.currentDistance)
@@ -119,7 +105,7 @@ class PyGameUi():
         self.updateBoats(playground.boats)
 
         #update the stat section
-        self.updateStats(playground, timeGone)
+        self.updateStats(playground)
 
     def adjustDistance(self, boats, distance):
         #check the distance from player to the first boat
@@ -152,7 +138,7 @@ class PyGameUi():
             self.sceneStartOffset = -(self.sceneRange/2)
             self.sceneEndOffset = self.sceneRange
 
-    def updateStats(self, playground, timeGone):
+    def updateStats(self, playground):
         self.screen.fill(LIGHTGREY, [[0, 0], [self.width, self.statPanelHeight]])
         pygame.draw.line(self.screen, BLACK, [0, self.statPanelHeight],[self.width, self.statPanelHeight], 3)
 
@@ -170,8 +156,9 @@ class PyGameUi():
         pygame.draw.line(self.screen, BLACK, [rightDividerX, rightHeightDivider],[self.width, rightHeightDivider], 1)
 
         #display the workout time
-        #NOTE: We're using our own timeGone here instead of the one delivered by the ergometer. I'm not sure if this brings up problems
-        txt = "%.2i:%.2i:%.2i.%.1i" % (int((timeGone/3600000)%24), int((timeGone/60000)%60), int((timeGone/1000)%60), int((timeGone/10)%10) )
+        #use the time given by ergometer, it pauses when the player pauses etc
+        timeGone = ErgStats.time
+        txt = "%.2i:%.2i:%.2i.%.1i" % (int((timeGone/3600)%24), int((timeGone/60)%60), int((timeGone)%60), int((timeGone * 100)%10) )
         timeTxt = self.font72.render(txt, True, BLACK)
         #NOTE: outcommented the generic approach here because it wasn't in a fixed position (text would jitter left and right)
         #timePosX = leftDividerX/2 - (timeTxt.get_size()[0] / 2.0)
