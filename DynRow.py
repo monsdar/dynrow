@@ -20,13 +20,13 @@ def main():
     ErgStats.initialize()
 
     # init the player boat
-    player = BoatConcept2("Player")
+    player = BoatConcept2("Nils")
     playground.setPlayerBoat(player)
 
     #init the other boats
-    playground.addBoat(BoatBoomerang("Armin", 160, 20, 20))
-    playground.addBoat(BoatBoomerang("Bahne", 140, 22, 20))
-    playground.addBoat(BoatBoomerang("Matthias", 130, 26, 20))
+    playground.addBoat(BoatBoomerang("Armin", 130, 20, 20))
+    playground.addBoat(BoatBoomerang("Bahne", 135, 22, 20))
+    playground.addBoat(BoatBoomerang("Matthias", 140, 26, 20))
 
     #init the UI, register the GameLoop and run it
     ui.registerCallback(gameLoop)

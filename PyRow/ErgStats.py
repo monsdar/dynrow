@@ -71,9 +71,12 @@ class ErgStats:
             ErgStats.avgPace = ErgStats.pace
 
         #just update the average if the time has changed
-        if(ErgStats.time != ErgStats.prevTime):
+        if(ErgStats.time - ErgStats.prevTime > 0.01): #check if some time has passed
             ErgStats.avgPace = ((ErgStats.avgPace * ErgStats.numQueries) + ErgStats.pace) / (ErgStats.numQueries + 1)
             ErgStats.numQueries += 1
+	
+	#set the prevTime to be able to compare it next cycle
+        ErgStats.prevTime = ErgStats.time
 
         #TODO: This is just for testing purposes. It simulates a moving boat by increasing the distance every cycle
         if (ErgStats.erg == None):
