@@ -19,6 +19,7 @@ class ErgStats:
     calories = 0   #Calories burned away
     heartrate = 155#Heartrate
     time = 0.0     #the time of the ergometer, this is important to use because it pauses if the user pauses etc
+    prevTime = 0.0 #needed to see if the time has been updated (else the player is pausing or something similar)
 
     numQueries = 0 #the number of queries done to the ergometer. This is needed e.g. to calc the average pace
 
@@ -64,11 +65,15 @@ class ErgStats:
             #print "Error receiving monitor status"
             pass
 
-        #calc the pace
+        #calc the average pace
+        #init the value at the first time we're in here
         if(ErgStats.avgPace <= 0.000001):
             ErgStats.avgPace = ErgStats.pace
-        ErgStats.avgPace = ((ErgStats.avgPace * ErgStats.numQueries) + ErgStats.pace) / (ErgStats.numQueries + 1)
-        ErgStats.numQueries += 1
+
+        #just update the average if the time has changed
+        if(ErgStats.time != ErgStats.prevTime):
+            ErgStats.avgPace = ((ErgStats.avgPace * ErgStats.numQueries) + ErgStats.pace) / (ErgStats.numQueries + 1)
+            ErgStats.numQueries += 1
 
         #TODO: This is just for testing purposes. It simulates a moving boat by increasing the distance every cycle
         if (ErgStats.erg == None):
