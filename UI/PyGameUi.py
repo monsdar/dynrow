@@ -1,8 +1,8 @@
 from datetime import datetime
 
 import pygame
+pygame.init() #is it a good place to init pygame here?
 
-import PygameInit #needed before we could import the Fonts etc
 import Colors
 import Fonts
 
