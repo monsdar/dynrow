@@ -2,7 +2,7 @@ from datetime import datetime
 
 import pygame
 
-import PygameInit
+import PygameInit #needed before we could import the Fonts etc
 import Colors
 import Fonts
 

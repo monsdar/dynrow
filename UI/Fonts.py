@@ -1,5 +1,6 @@
 
 import pygame
+import PygameInit
 
 font16 = pygame.font.SysFont('Arial', 16)
 font24 = pygame.font.SysFont('Arial', 24)
