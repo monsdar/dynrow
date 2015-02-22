@@ -18,12 +18,20 @@ class BoatBoomerang(Boat):
         self.offsetDist = 0.0 #needed if the boat changes its pace
         self.currentTime = 0.0#needed if the boat changes its pace
 
+    def reset(self):
+        self.pace = self.originalPace
+        self.lastSecCheck = 0
+        self.offsetTime = 0.0
+        self.offsetDist = 0.0
+        self.currentTime = 0.0
+
     def changePace(self, newPace):
         self.pace = newPace
         self.offsetTime = self.currentTime
         self.offsetDist = self.distance
 
     def move(self, timeGone):
+        #check once a second if we need to change the pace
         currentSec = int((timeGone) % 10)
         if( currentSec != self.lastSecCheck ):
             #if the boat is out of the given distance change the pace get back to the player

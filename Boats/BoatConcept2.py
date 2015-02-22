@@ -6,7 +6,6 @@ from PyRow.ErgStats import ErgStats
 class BoatConcept2(Boat):
     def __init__(self, name, distance=0):
         Boat.__init__(self, name, distance)
-        self.erg = None
 
     def initialize(self):
         pass

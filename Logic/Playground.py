@@ -20,11 +20,13 @@ class Playground():
         
     def setPlayerBoat(self, boat):
         self.playerBoat = boat
-        
-    def update(self, timeGone):
-        #update the ergometer data
-        ErgStats.update()
 
+    def reset(self):
+        for boat in self.boats:
+            boat.reset()
+        self.playerBoat.reset()
+
+    def update(self, timeGone):
         #move all the bots
         for boat in self.boats:
             boat.move(timeGone)

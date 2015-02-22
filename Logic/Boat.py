@@ -14,6 +14,9 @@ class Boat():
 
     def getDistance(self):
             return self.distance
-    
+
+    def reset(self):
+        self.distance = 0.0
+
     def move(self, timeGone):
         pass

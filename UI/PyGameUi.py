@@ -8,6 +8,7 @@ import Fonts
 
 from PyRow.ErgStats import ErgStats
 from UI.Monitor import Monitor
+from UI.MessageBox import MessageBox
 
 class PyGameUi():
     def __init__(self):
@@ -41,9 +42,9 @@ class PyGameUi():
             self.width = 1366
             self.height = 768
             print 'Using windowed resolution: %i x %i' % (self.width, self.height)
+
         self.monitorHeight = 300
         self.racePanelHeight = self.height - self.monitorHeight
-
         self.monitor = Monitor(self.screen, self.width, self.monitorHeight)
 
     def run(self):
@@ -62,13 +63,14 @@ class PyGameUi():
             # Clear the screen and set the screen background
             self.screen.fill(Colors.LIGHTSTEELBLUE)
 
+            #this updates the bots, playerboat and Ergstats
+            for cb in self.callbacks:
+                cb()
+
             #update the FPS every second in the window-title (updating too often costs too much performance)
             if not (int(ErgStats.time) == self.lastFpsUpdate):
                 pygame.display.set_caption("%3.2f FPS" % clock.get_fps())
                 self.lastFpsUpdate = int(ErgStats.time)
-
-            for cb in self.callbacks:
-                cb(ErgStats.time)
 
             # Go ahead and update the screen with what we've drawn.
             # This MUST happen after all the other drawing commands.
@@ -88,6 +90,10 @@ class PyGameUi():
 
         #update the stat section
         self.monitor.updateStats(playground)
+
+    def showMessage(self, text):
+        messageBox = MessageBox(self.screen, self.width, self.height)
+        messageBox.renderMessage(text)
 
     def adjustDistance(self, boats, distance):
         #check the distance from player to the first boat
