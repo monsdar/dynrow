@@ -1,10 +1,11 @@
 
-from PyRow.ErgStats import ErgStats
+from Storage.SQLiteStorage import SQLiteStorage
 
 class Playground():
     def __init__(self):
         self.boats = []
         self.position = 0.0
+        self.storage = SQLiteStorage() #needed to store the current workout to file (needed for ghosting)
         
     def getCurrentPosition(self):
         return self.position
@@ -33,3 +34,6 @@ class Playground():
 
         #move the player
         self.playerBoat.move(timeGone)
+
+        #store the current state into the storage
+        self.storage.storeState(timeGone)

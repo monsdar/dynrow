@@ -10,9 +10,9 @@ except ImportError:
 
 class ErgStats(object):
     distance = 0.0   # distance in m
-    spm = 10          # Strokes per Minute
-    pace = 10.0       # pace in seconds (2:15.0 equals 135.0)
-    avgPace = 10.0    # the average pace for the current session
+    spm = 0          # Strokes per Minute
+    pace = 0.0       # pace in seconds (2:15.0 equals 135.0)
+    avgPace = 0.0    # the average pace for the current session
     calhr = 0.0      # These are the approx. calories per hour the user burns
     power = 0        # Power in Watts
     calories = 0     # Calories burned away
@@ -42,7 +42,7 @@ class ErgStats(object):
     def isWorkoutActive():
         #if there is no erg we can skip all the workout init stuff...
         if not ErgStats.isConnected:
-            return False
+            return True
 
         # Loop until workout has begun
         workout = ErgStats.erg.getWorkout()

@@ -12,3 +12,4 @@ class BoatConcept2(Boat):
 
     def move(self, timeGone):
         self.distance = ErgStats.distance
+        self.pace = ErgStats.pace

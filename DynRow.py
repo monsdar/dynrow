@@ -1,10 +1,24 @@
+
+import glob
+import os
+
 from UI.PyGameUi import PyGameUi
 from Boats.BoatConcept2 import BoatConcept2
 from Boats.BoatBoomerang import BoatBoomerang
+from Boats.BoatGhost import BoatGhost
 from Logic.Playground import Playground
 from PyRow.ErgStats import ErgStats
 
 DELTAT = 16  # run with ~60FPS
+
+#get newest workout file
+#do this before the Playground gets created (thus creating a new Ghostfile)
+ghostFiles = glob.glob('*.db')
+if len(ghostFiles) > 0:
+    newestGhost = max(ghostFiles, key=os.path.getctime)
+else:
+    newestGhost = ""
+
 playground = Playground()  # the playground is a class which holds all the information (all the boats etc)
 ui = PyGameUi() # the UI which will display the playground on a graphical interface
 
@@ -34,7 +48,9 @@ def main():
     #init the AI boats
     playground.addBoat(BoatBoomerang("Armin", 130, 20, 20))
     playground.addBoat(BoatBoomerang("Bahne", 135, 22, 20))
-    playground.addBoat(BoatBoomerang("Matthias", 140, 26, 20))
+
+    if not newestGhost == "":
+        playground.addBoat(BoatGhost("Ghost", newestGhost))
 
     # Init the Concept2
     ErgStats.connectToErg()
