@@ -15,8 +15,8 @@ My goal is to create a rowing application which displays thorough statistics abo
 * *Intervals:* Usually this bot runs on a constant pace, but it'll push the tempo from time to time. Try to keep pace
 * ... There are a lot of different bots possible, time will tell what bots are the most useful
 
-Another idea is to implement a logic which adds additional boats to your workout. So besides the bots you specifially set up there will a lot different boats with randomized behaviour. The goal is to have a widely populated environment instead of simply the same 2 boats you row with your entire session. We'll see how this works out.
+Another idea is to implement a logic which adds additional bots to your workout. So besides the bots you specifially set up there will a lot different bots with randomized behaviour. The goal is to have a widely populated environment instead of simply the same 2 bots you row with your entire session. We'll see how this works out.
 
-The software uses a slightly modified version of  [PyRow](http://www.newhavenrowingclub.org/pyrow/) and has been tested to work on a Xubuntu 14.04 machine connected to a PM5 monitor. I'm open sourcing this software to allow people to adopt it to their own machines. It also could be useful to have as much different bots as possible.
+The software uses a slightly modified version of  [PyRow](http://www.newhavenrowingclub.org/pyrow/) and has been tested to work on a Xubuntu 14.04 machine connected to a PM5 monitor. I'm open sourcing this software to allow people to adopt it to their own machines. It also could be useful to have as much different bots as possible, so feel free to contribute.
 
 The modifications of PyRow are made to be able to work with my PM5 monitor. There's also some additional exception handling added. I haven't made much effort to keep it portable to PM3/4 monitors, it's currently just set up to get it up and running on my system.
