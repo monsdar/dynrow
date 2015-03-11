@@ -19,8 +19,8 @@ c2vendorID = 0x17a4
 #pm4prodID = 0x0002
 #inEndpoint = 0x83  #EP3 poll rate of 8ms
 #outEndpoint = 0x04 #EP4 poll rate of 4ms
-inEndpoint = 0x82  #PM5 IN
-outEndpoint = 0x03 #PM5 OUT
+inEndpoint = 0x81  #PM5 IN
+outEndpoint = 0x02 #PM5 OUT
 minframegap = .050 #in seconds
 interface = 0
 
