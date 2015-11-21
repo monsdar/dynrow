@@ -1,6 +1,7 @@
 
 import glob
 import os
+import dynrow_args
 
 from UI.PyGameUi import PyGameUi
 from Boats.BoatConcept2 import BoatConcept2
@@ -8,6 +9,7 @@ from Boats.BoatBoomerang import BoatBoomerang
 from Boats.BoatGhost import BoatGhost
 from Logic.Playground import Playground
 from PyRow.ErgStats import ErgStats
+
 
 DELTAT = 16  # run with ~60FPS
 
@@ -40,9 +42,11 @@ def gameLoop():
     if not isWorkoutActive:
         ui.showMessage("Please start rowing...")
 
+
+
 def main():
     # init the player boat
-    player = BoatConcept2("Nils")
+    player = BoatConcept2(dynrow_args.args.name)
     playground.setPlayerBoat(player)
 
     #init the AI boats

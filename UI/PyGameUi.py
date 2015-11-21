@@ -1,4 +1,4 @@
-from datetime import datetime
+import dynrow_args
 
 import pygame
 pygame.init() #is it a good place to init pygame here?
@@ -169,7 +169,8 @@ class PyGameUi():
 
         currentHeight = (self.playerLane + 1) * self.laneHeight * heightFactor + self.monitorHeight
         pos = {"posX": self.width/2 , "posY": currentHeight}
-        self.printBoat(pos, "Player", Colors.DARKORANGE, ErgStats.pace)
+        #self.printBoat(pos, "Player", Colors.DARKORANGE, ErgStats.pace)
+        self.printBoat(pos, dynrow_args.args.name, Colors.DARKORANGE, ErgStats.pace)
 
     def printBoat(self, position, name, color, pace):
         #the following factors are used to calculate from a distance in meters into a distance on the
