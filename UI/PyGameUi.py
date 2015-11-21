@@ -169,7 +169,6 @@ class PyGameUi():
 
         currentHeight = (self.playerLane + 1) * self.laneHeight * heightFactor + self.monitorHeight
         pos = {"posX": self.width/2 , "posY": currentHeight}
-        #self.printBoat(pos, "Player", Colors.DARKORANGE, ErgStats.pace)
         self.printBoat(pos, dynrow_args.args.name, Colors.DARKORANGE, ErgStats.pace)
 
     def printBoat(self, position, name, color, pace):
