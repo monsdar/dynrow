@@ -20,3 +20,11 @@ Another idea is to implement a logic which adds additional bots to your workout.
 The software uses a slightly modified version of  [PyRow](http://www.newhavenrowingclub.org/pyrow/) and has been tested to work on a Xubuntu 14.04 machine connected to a PM5 monitor. I'm open sourcing this software to allow people to adopt it to their own machines. It also could be useful to have as much different bots as possible, so feel free to contribute.
 
 The modifications of PyRow are made to be able to work with my PM5 monitor. There's also some additional exception handling added. I haven't made much effort to keep it portable to PM3/4 monitors, it's currently just set up to get it up and running on my system.
+
+You can set the player boat's name at the command line like this:
+
+python DynRow.py  --name <player name>
+
+e.g:
+
+python DynRow.py --name Henry
