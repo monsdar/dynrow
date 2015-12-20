@@ -8,7 +8,8 @@ from Boats.BoatConcept2 import BoatConcept2
 from Boats.BoatBoomerang import BoatBoomerang
 from Boats.BoatGhost import BoatGhost
 from Logic.Playground import Playground
-from PyRow.ErgStats import ErgStats
+
+from ErgStatsFactory import ErgStats
 
 
 DELTAT = 16  # run with ~60FPS
