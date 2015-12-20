@@ -5,6 +5,7 @@ import dynrow_args
 
 from UI.PyGameUi import PyGameUi
 from Boats.BoatConcept2 import BoatConcept2
+from Boats.BoatRollingAverage import BoatRollingAverage
 from Boats.BoatBoomerang import BoatBoomerang
 from Boats.BoatGhost import BoatGhost
 from Logic.Playground import Playground
@@ -52,6 +53,7 @@ def main():
     #init the AI boats
     playground.addBoat(BoatBoomerang("Armin", 130, 20, 20))
     playground.addBoat(BoatBoomerang("Bahne", 135, 22, 20))
+    playground.addBoat(BoatRollingAverage("Emil", playground.getPlayerBoat())) 
 
     if not newestGhost == "":
         playground.addBoat(BoatGhost("Ghost", newestGhost))
