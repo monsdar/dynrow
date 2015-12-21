@@ -42,7 +42,7 @@ class BoatRollingAverage(BoatConstant):
         # time update this boat's pace to the current rolling average?
         if self.other_boat.distance > self.next_update_pace_at:
             self.next_update_pace_at += self.meters_between_pace_updates
-            newPace = int(self.buffer.average)
+            newPace = int(self.buffer.average+0.5)
             if newPace != self.pace and newPace != 0:
                 log.debug("changing pace to %s"%newPace)
                 self.changePace(newPace)
