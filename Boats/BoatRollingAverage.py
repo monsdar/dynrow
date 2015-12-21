@@ -16,6 +16,9 @@ log = logbook.Logger("BoatRollingAverage")
 
 
 class BoatRollingAverage(BoatConstant):
+
+    DEFAULT_PACE = 220
+
     def __init__(self, name, other_boat, meters_to_average=500, meters_between_pace_updates=10):
         super(BoatRollingAverage, self).__init__(name)
         self.other_boat = other_boat 
@@ -27,7 +30,7 @@ class BoatRollingAverage(BoatConstant):
         super(BoatRollingAverage, self).reset()
         self.buffer = CircularBuffer(size=self.meters_to_average)
         self.buffer.append(self.other_boat.pace)
-        self.pace = 220
+        self.pace = BoatRollingAverage.DEFAULT_PACE
         self.current_distance = self.other_boat.distance
         self.next_update_at = self.current_distance
         self.next_update_pace_at = self.current_distance
