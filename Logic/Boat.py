@@ -1,5 +1,5 @@
 
-class Boat():
+class Boat(object):
     def __init__(self, name, distance=0.0, pace=0.0):
         self.name = name            #name of the Rower
         self.distance = distance    #distance in m the boat has rowed

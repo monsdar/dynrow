@@ -28,3 +28,8 @@ python DynRow.py  --name <player name>
 e.g:
 
 python DynRow.py --name Henry
+
+
+#Running tests
+pip install nose
+nosetests

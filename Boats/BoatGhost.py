@@ -4,11 +4,8 @@ from Storage.SQLiteStorage import SQLiteStorage
 
 class BoatGhost(Boat):
     def __init__(self, name, filename, distance=0):
-        Boat.__init__(self, name, distance)
+        super(BoatGhost, self).__init__(name, distance)
         self.storage = SQLiteStorage(filename)
-
-    def reset(self):
-        pass
 
     def move(self, timeGone):
         data = self.storage.getDataTuple(timeGone)
