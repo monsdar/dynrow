@@ -3,9 +3,9 @@
 import time
 
 try:
-    from PyRow import pyrow
+    from . import pyrow
 except ImportError:
-    print "Error importing Pyrow"
+    print("Error importing Pyrow")
 
 
 class ErgStats(object):
@@ -27,16 +27,13 @@ class ErgStats(object):
 
     @staticmethod
     def connectToErg():
-        ergs = []
-
         try:
-            while len(ergs) == 0:
-                ergs = pyrow.find()
-            ErgStats.erg = pyrow.pyrow(ergs[0])
+            ergs = pyrow.find()
+            ErgStats.erg = pyrow.pyrow(ergs)
             ErgStats.isConnected = True
-            print "Connected to erg"
+            print("Connected to erg")
         except NameError:
-            print "Error initing the Concept2, PyRow not available"
+            print("Error initing the Concept2, PyRow not available")
 
     @staticmethod
     def isWorkoutActive():

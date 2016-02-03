@@ -3,8 +3,8 @@ import dynrow_args
 import pygame
 pygame.init() #is it a good place to init pygame here?
 
-import Colors
-import Fonts
+from . import Colors
+from . import Fonts
 
 from PyRow.ErgStats import ErgStats
 from UI.Monitor import Monitor
@@ -33,7 +33,7 @@ class PyGameUi():
         modes = pygame.display.list_modes()
         #TODO: This is just for debugging purposes, but'll probably fuck up the resolution for everyone not using my system setup
         if(modes[0][0] == 1366):
-            print 'Using fullscreen resolution:', modes[0]
+            print('Using fullscreen resolution:', modes[0])
             self.screen = pygame.display.set_mode(modes[0], pygame.FULLSCREEN)
             self.width = modes[0][0]
             self.height = modes[0][1]
@@ -41,7 +41,7 @@ class PyGameUi():
             self.screen = pygame.display.set_mode([1366, 768])
             self.width = 1366
             self.height = 768
-            print 'Using windowed resolution: %i x %i' % (self.width, self.height)
+            print('Using windowed resolution: %i x %i' % (self.width, self.height))
 
         self.monitorHeight = 300
         self.racePanelHeight = self.height - self.monitorHeight

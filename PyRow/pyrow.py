@@ -10,28 +10,30 @@ import sys
 
 import usb.core
 import usb.util
-from PyRow import csafe_cmd
+from . import csafe_cmd
 
 
 #move what I can into class?
-c2vendorID = 0x17a4
+c2vendorID = int('0x17a4', 16)
 #pm3prodID = 0x0001
 #pm4prodID = 0x0002
 #inEndpoint = 0x83  #EP3 poll rate of 8ms
 #outEndpoint = 0x04 #EP4 poll rate of 4ms
-inEndpoint = 0x81  #PM5 IN
-outEndpoint = 0x02 #PM5 OUT
+inEndpoint = 0x83  #PM3 IN
+outEndpoint = 0x04 #PM3 OUT
+# inEndpoint = 0x81  #PM5 IN
+# outEndpoint = 0x02 #PM5 OUT
 minframegap = .050 #in seconds
 interface = 0
 
 def find():
-	ergs = usb.core.find(find_all=True, idVendor=c2vendorID)
+	ergs = usb.core.find(idVendor=c2vendorID)
 	if ergs is None: raise ValueError('Ergs not found')
 	return ergs
 
 class pyrow:
 	
-	def __init__(this, erg):
+	def __init__(self, erg):
 		#Configures usb connection and sets erg value
 
 		if sys.platform != 'win32':	
@@ -39,7 +41,7 @@ class pyrow:
 			if erg.is_kernel_driver_active(interface):
 				erg.detach_kernel_driver(interface)
 			else:
-				print "DEBUG: usb kernel driver not on " + sys.platform
+				print("DEBUG: usb kernel driver not on " + sys.platform)
 		
 		#Claim interface (Needs Testing To See If Necessary)
 		usb.util.claim_interface(erg, interface)
@@ -51,10 +53,10 @@ class pyrow:
 		except:
 			pass
 		
-		this.erg = erg
-		this.__lastsend = datetime.datetime.now()
+		self.erg = erg
+		self.__lastsend = datetime.datetime.now()
 	
-	def __checkvalue(this, value, label, minimum, maximum):
+	def __checkvalue(self, value, label, minimum, maximum):
 		#Checks that value is an integer and within the specified range
 		
 		if type(value) is not int:
@@ -63,12 +65,12 @@ class pyrow:
 			raise ValueError(label + " outside of range")
 		return True
 	
-	def getMonitor(this, forceplot=False):
+	def getMonitor(self, forceplot=False):
 		#Returns values from the monitor that relate to the current workout, optionally returns force plot data and stroke state
 		
 		command = ['CSAFE_PM_GET_WORKTIME', 'CSAFE_PM_GET_WORKDISTANCE', 'CSAFE_GETCADENCE_CMD', 'CSAFE_GETPOWER_CMD', 'CSAFE_GETCALORIES_CMD', 'CSAFE_GETHRCUR_CMD']
 		if forceplot: command.extend(['CSAFE_PM_GET_FORCEPLOTDATA', 32, 'CSAFE_PM_GET_STROKESTATE'])
-		results = this.send(command)
+		results = self.send(command)
 		
 		monitor = {}
 		monitor['time'] = (results['CSAFE_PM_GET_WORKTIME'][0] + results['CSAFE_PM_GET_WORKTIME'][1])/100.
@@ -93,11 +95,11 @@ class pyrow:
 		return monitor
 	
 	
-	def getForcePlot(this):
+	def getForcePlot(self):
 		#Returns force plot data and stroke state
 		
 		command = ['CSAFE_PM_GET_FORCEPLOTDATA', 32, 'CSAFE_PM_GET_STROKESTATE']
-		results = this.send(command)
+		results = self.send(command)
 		
 		forceplot = {}
 		datapoints = results['CSAFE_PM_GET_FORCEPLOTDATA'][0] / 2
@@ -109,11 +111,11 @@ class pyrow:
 		return forceplot
 
 	
-	def getWorkout(this):
+	def getWorkout(self):
 		#Returns overall workout data  
 		
 		command = ['CSAFE_GETID_CMD', 'CSAFE_PM_GET_WORKOUTTYPE', 'CSAFE_PM_GET_WORKOUTSTATE', 'CSAFE_PM_GET_INTERVALTYPE', 'CSAFE_PM_GET_WORKOUTINTERVALCOUNT']
-		results = this.send(command)
+		results = self.send(command)
 		
 		workoutdata = {}
 		workoutdata['userid'] = results['CSAFE_GETID_CMD'][0]
@@ -127,11 +129,11 @@ class pyrow:
 		return workoutdata
 		
 
-	def getErg(this):
+	def getErg(self):
 		#Returns all erg data that is not related to the workout
 		
 		command = ['CSAFE_GETVERSION_CMD', 'CSAFE_GETSERIAL_CMD', 'CSAFE_GETCAPS_CMD', 0x00]
-		results = this.send(command)
+		results = self.send(command)
 		
 		ergdata = {}
 		#Get data from csafe get version command
@@ -151,18 +153,18 @@ class pyrow:
 		
 		return ergdata
 	
-	def getStatus(this):
+	def getStatus(self):
 		#Returns the status of the erg
 		
 		command = ['CSAFE_GETSTATUS_CMD', ]
-		results = this.send(command)
+		results = self.send(command)
 		
 		status = {}
 		status['status'] = results['CSAFE_GETSTATUS_CMD'][0] & 0xF
 		
 		return status		
 
-	def setClock(this):
+	def setClock(self):
 		#Sets the erg clock to the computers current time and date
 		
 		now = datetime.datetime.now() #Get current date and time
@@ -170,25 +172,25 @@ class pyrow:
 		command = ['CSAFE_SETTIME_CMD', now.hour, now.minute, now.second] #Set time
 		command.extend(['CSAFE_SETDATE_CMD', (now.year-1900), now.month, now.day]) #Set date
 		
-		this.send(command) #Send command to erg
+		self.send(command) #Send command to erg
 	
-	def setWorkout(this, program=0, time=0, distance=0, split=0, pace=0, calpace=0, powerpace=0):
+	def setWorkout(self, program=0, time=0, distance=0, split=0, pace=0, calpace=0, powerpace=0):
 		
 		command = ['CSAFE_RESET_CMD']
 		
 		#Set Workout Goal
 		if program != 0:
-			this.__checkvalue(program,  "Program", 0, 15)
+			self.__checkvalue(program,  "Program", 0, 15)
 		elif time != 0:
 			if len(time) == 1: time.insert(0,0) #if only seconds in time then pad minutes
 			if len(time) == 2: time.insert(0,0) #if no hours in time then pad hours
-			this.__checkvalue(time[0],  "Time Hours", 0, 9)
-			this.__checkvalue(time[1],  "Time Minutes", 0, 59)
-			this.__checkvalue(time[2],  "Time Seconds", 0, 59)
+			self.__checkvalue(time[0],  "Time Hours", 0, 9)
+			self.__checkvalue(time[1],  "Time Minutes", 0, 59)
+			self.__checkvalue(time[2],  "Time Seconds", 0, 59)
 			if time[0] == 0 and time[1] == 0 and time[2] < 20:  raise ValueError("Workout too short") #checks if workout is < 20 seconds
 			command.extend(['CSAFE_SETTWORK_CMD', time[0], time[1], time[2]])
 		elif distance != 0:
-			this.__checkvalue(distance,  "Distance", 100, 50000)
+			self.__checkvalue(distance,  "Distance", 100, 50000)
 			command.extend(['CSAFE_SETHORIZONTAL_CMD', distance, 36]) #36 = meters
 		
 		#Set Split
@@ -197,11 +199,11 @@ class pyrow:
 				split = int(split*100)
 				timeraw = time[0]*3600+time[1]*60+time[2] #total workout time (1 sec)
 				minsplit = int(timeraw/30*100+0.5) #split time that will occur 30 times (.01 sec)
-				this.__checkvalue(split,  "Split Time", max(2000, minsplit), timeraw*100)
+				self.__checkvalue(split,  "Split Time", max(2000, minsplit), timeraw*100)
 				command.extend(['CSAFE_PM_SET_SPLITDURATION', 0, split])
 			elif distance != 0 and program == 0:
 				minsplit = int(distance/30+0.5) #split distance that will occur 30 times (m)
-				this.__checkvalue(split,  "Split distance", max(100, minsplit) , distance)
+				self.__checkvalue(split,  "Split distance", max(100, minsplit) , distance)
 				command.extend(['CSAFE_PM_SET_SPLITDURATION', 128, split])
 			else:
 				raise ValueError("Cannot set split for current goal")
@@ -219,14 +221,14 @@ class pyrow:
 	
 		command.extend(['CSAFE_SETPROGRAM_CMD', program, 0, 'CSAFE_GOINUSE_CMD'])
 		
-		this.send(command)
+		self.send(command)
 
-	def send(this, message):
+	def send(self, message):
 		#Converts and sends message to erg; recieves, converts, and returns ergs response
 		
 		#Checks that enought time has passed since the last message was sent, if not program sleeps till time has passed
 		now = datetime.datetime.now()
-		delta = now - this.__lastsend
+		delta = now - self.__lastsend
 		deltaraw = delta.seconds + delta.microseconds/1000000.
         #NOTE: I disabled the sleep here because it seemed to work just fine without it interrupting everything...
 		#if deltaraw < minframegap:
@@ -235,15 +237,15 @@ class pyrow:
 		csafe = csafe_cmd.Write(message) #convert message to byte array
 		
 		try:
-			length = this.erg.write(outEndpoint, csafe) #sends message to erg and records length of message
+			length = self.erg.write(outEndpoint, csafe) #sends message to erg and records length of message
 		except:
-			print "ERROR: USB Timeout"
+			print("ERROR: USB Timeout")
 			raise
-		this.__lastsend = datetime.datetime.now() #records time when message was sent
+		self.__lastsend = datetime.datetime.now() #records time when message was sent
 		try:
-			response = this.erg.read(inEndpoint, length) #recieves byte array from erg
+			response = self.erg.read(inEndpoint, length) #recieves byte array from erg
 		except:
-			print "ERROR: No message was received back from erg"
+			print("ERROR: No message was received back from erg")
 			raise
 			#return [] #ToDo: Replace with error or let error trigger? #No message was recieved back from erg
 			

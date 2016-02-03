@@ -8,7 +8,7 @@ license as DynRow is distributed.
 
 """
 
-from BoatConstant import BoatConstant
+from .BoatConstant import BoatConstant
 from util.CircularBuffer import CircularBuffer
 
 import logbook
