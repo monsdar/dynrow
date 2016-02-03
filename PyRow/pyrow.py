@@ -19,10 +19,6 @@ c2vendorID = int('0x17a4', 16)
 #pm4prodID = 0x0002
 #inEndpoint = 0x83  #EP3 poll rate of 8ms
 #outEndpoint = 0x04 #EP4 poll rate of 4ms
-inEndpoint = 0x83  #PM3 IN
-outEndpoint = 0x04 #PM3 OUT
-# inEndpoint = 0x81  #PM5 IN
-# outEndpoint = 0x02 #PM5 OUT
 minframegap = .050 #in seconds
 interface = 0
 
@@ -54,8 +50,14 @@ class pyrow:
 			pass
 		
 		self.erg = erg
+		if "PM3" or "PM4" in erg.product:
+			self.inEndpoint = 0x83  #PM3 or PM4 IN 
+			self.outEndpoint = 0x04 #PM3 or PM4 OUT
+		elif "PM5" in erg.product:
+			self.inEndpoint = 0x81  #PM5 IN
+			self.outEndpoint = 0x02 #PM5 OUT
 		self.__lastsend = datetime.datetime.now()
-	
+
 	def __checkvalue(self, value, label, minimum, maximum):
 		#Checks that value is an integer and within the specified range
 		
@@ -237,13 +239,13 @@ class pyrow:
 		csafe = csafe_cmd.Write(message) #convert message to byte array
 		
 		try:
-			length = self.erg.write(outEndpoint, csafe) #sends message to erg and records length of message
+			length = self.erg.write(self.outEndpoint, csafe) #sends message to erg and records length of message
 		except:
 			print("ERROR: USB Timeout")
 			raise
 		self.__lastsend = datetime.datetime.now() #records time when message was sent
 		try:
-			response = self.erg.read(inEndpoint, length) #recieves byte array from erg
+			response = self.erg.read(self.inEndpoint, length) #recieves byte array from erg
 		except:
 			print("ERROR: No message was received back from erg")
 			raise
