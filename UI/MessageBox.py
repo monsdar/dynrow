@@ -1,8 +1,8 @@
 
 import pygame
 
-import Colors
-import Fonts
+from . import Colors
+from . import Fonts
 
 class MessageBox:
     def __init__(self, screenHandle, width, height):

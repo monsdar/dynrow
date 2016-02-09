@@ -1,8 +1,8 @@
 
 import pygame
 
-import Colors
-import Fonts
+from . import Colors
+from . import Fonts
 
 from PyRow.ErgStats import ErgStats
 from Logic.Boat import Boat
